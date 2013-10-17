@@ -8,6 +8,7 @@ classdef grhModel
         nParams;   % number of parameters
         priorLo;   % lower bounds of priors
         priorHi;   % upper bounds of priors
+        priorSt;   % length of prior range
         
     end
     
@@ -30,6 +31,7 @@ classdef grhModel
             end
             obj.priorLo = priorLo;
             obj.priorHi = priorHi;
+            obj.priorSt = priorHi - priorLo;
            
         end
     end
