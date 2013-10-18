@@ -1,4 +1,4 @@
-function [out] = testSim1(params)
+function [out] = testSim1(params, metaData)
 
 paramNames = {'param1', 'param2', 'param3'};
 if nargin == 0

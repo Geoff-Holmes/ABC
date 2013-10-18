@@ -1,23 +1,28 @@
 function obj = firstIteration(obj)
 
+% obj = firstIteration(obj)
 
 % select model from model prior
 dummy = rand(1, obj.sizePop);
 modInd = sum(bsxfun(@ge, dummy, [0; obj.modelPrior(1:end-1)']));
 clear dummy
 
-
+% foster slicing for parallel
+candMods = obj.candMods;
+metaData = obj.metaData;
+metric   = obj.metric;
+targetObs= obj.targetObs;
 
 % parallel loop
 parfor i = 1:obj.sizePop
     
     % get chosen model
-    thisMod = obj.candMods(modInd(i));
+    thisMod = candMods(modInd(i));
     % choose parameter set from prior for this model
     params{i} = thisMod.priorLo + thisMod.priorSt .* rand(1, thisMod.nParams);
     % simulate model with chosen parameter set
-    simObs = thisMod.simltr(params{i});
-    errors(i) = obj.metric(simObs, obj.targetObs);
+    simObs = thisMod.simltr(params{i}, metaData);
+    errors(i) = metric(simObs, targetObs);
     
 end
 
@@ -36,13 +41,14 @@ while Npassed < obj.sizePop
     % select model from model prior
     dummy = rand(1, extra);
     modInd = [modInd sum(bsxfun(@ge, dummy, [0; obj.modelPrior(1:end-1)']))];
+    clear dummy
     parfor i = counter+1:counter+extra
         % get chosen model
         thisMod = obj.candMods(modInd(i));
         % choose parameter set from prior for this model
         params{i} = thisMod.priorLo + thisMod.priorSt .* rand(1, thisMod.nParams);
         % simulate model with chosen parameter set
-        simObs = thisMod.simltr(params{i});
+        simObs = thisMod.simltr(params{i}, obj.metaData);
         errors(i) = obj.metric(simObs, obj.targetObs);
     end
     counter = counter + extra;
@@ -60,13 +66,13 @@ obj.params{1} = {params{passedInd}};
 obj.sizeGens(1) = length(passedInd);
 
 % calculate Beaumont weights
-parfor i = 1:obj.sizeGens(1)
-    weights(i) = ...
-        (1 - (errors(passedInd(i))/obj.tolSched(1)).^2)/obj.tolSched(1);
+if obj.Bwts
+    weights = (1 - (errors(passedInd)/obj.tolSched(1)).^2)/obj.tolSched(1);
+    % normalise and store
+    obj.weights{1} = weights/sum(weights);
+else
+    obj.weights{1} = ones(1, sizeGens(1));
 end
-
-% normalise and store
-obj.weights{1} = weights/sum(weights);
 
 % update iteration number
 obj.p = obj.p + 1;

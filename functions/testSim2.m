@@ -1,4 +1,4 @@
-function [out] = testSim2(params)
+function [out] = testSim2(params, metaData)
 
 paramNames = {'param1', 'param2'};
 

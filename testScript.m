@@ -1,6 +1,17 @@
 clear all
-M = grhModel(@testSim1, zeros(1,3),ones(1,3));
+
+load data/diffusion1
+
+M = grhModel(@diffusion, 0, 100);
 N = grhModel(@testSim2, 10*ones(1,2),20*ones(1,2));
-E=grhABCestimator(11,@testMetric,[M N]);
+
+metaData.initial = obs(1,:);
+metaData.timeInc = 1;
+metaData.T       = size(obs,1);
+
+E=grhABCestimator(obs, metaData, @testMetric2,[M N]);
 E.firstIteration;
-E.mainIteration;
+
+while E.p <= E.totalNits
+    E.mainIteration;
+end
