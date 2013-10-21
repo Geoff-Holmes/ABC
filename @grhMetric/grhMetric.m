@@ -5,7 +5,7 @@ classdef grhMetric < handle
         targetObs;   % target observations to measure against
         Nobs;        % number of observations
         custom;      % customized properties for each application
-        dist;        % handle of customised calling function
+        distHandle;  % handle of customised calling function
         
     end
     
@@ -17,11 +17,14 @@ classdef grhMetric < handle
             obj = customConstructor(obj);
         
         end
+
+        function d = dist(obj, X)
+            
+            d = obj.distHandle(obj, X);
+
+        end
     end
     
-%     methods(Abstract)
-%         dist(obj);
-%     end
 end
         
             
