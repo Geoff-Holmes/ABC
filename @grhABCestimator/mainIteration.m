@@ -45,6 +45,9 @@ cumWts = cumsum(obj.weights{obj.p-1});
 % counter for accepted samples
 Npassed = 0;
 
+% initialise (approximately)
+params = cell(1, 2*obj.sizePop);
+
 while Npassed < obj.sizePop
     
     % try new samples in 'extra' parallel batches
@@ -92,7 +95,7 @@ while Npassed < obj.sizePop
         end
     end % parfor
     
-    % identify which sample passed error tolerance test and how many
+    % identify which samples passed error tolerance test and how many
     passedInd = ~cellfun(@isempty, params);
     NnewPassed = sum(passedInd);
     

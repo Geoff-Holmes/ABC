@@ -18,7 +18,7 @@ metaData = obj.metaData;
 targetObs= obj.targetObs;
 
 % parallel loop
-for i = 1:obj.sizePop
+parfor i = 1:obj.sizePop
     
     % get chosen model
     thisMod = candMods(modInd(i));
@@ -51,7 +51,7 @@ while Npassed < obj.sizePop
         modInd = [modInd ones(1, extra)];
     end
     clear dummy
-    for i = counter+1:counter+extra
+    parfor i = counter+1:counter+extra
         % get chosen model
         thisMod = obj.candMods(modInd(i));
         % choose parameter set from prior for this model

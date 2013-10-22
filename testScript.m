@@ -13,12 +13,16 @@ metaData.T       = length(obs);
 E=grhABCestimator(obs, metaData, @testConstructor, [M]);
 clear obs metaData M N
 
+tic
+
 E.firstIteration;
 
 while E.p <= E.totalNits
     E.p
     E.mainIteration;
 end
+
+toc
 
 p = E.params{end};
 grhWeightedHist([p{:}], E.weights{end}, 10)
