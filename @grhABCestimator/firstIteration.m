@@ -3,18 +3,22 @@ function obj = firstIteration(obj)
 % obj = firstIteration(obj)
 
 % select model from model prior
-dummy = rand(1, obj.sizePop);
-modInd = sum(bsxfun(@ge, dummy, [0; obj.modelPrior(1:end-1)']));
-clear dummy
+multiModFlag = length(obj.candMods) > 1;
+if multiModFlag
+    dummy = rand(1, obj.sizePop);
+    modInd = sum(bsxfun(@ge, dummy, [0; obj.modelPrior(1:end-1)']));
+    clear dummy
+else
+    modInd = ones(1, obj.sizePop);
+end
 
 % foster slicing for parallel
 candMods = obj.candMods;
 metaData = obj.metaData;
-metric   = obj.metric.call;
 targetObs= obj.targetObs;
 
 % parallel loop
-parfor i = 1:obj.sizePop
+for i = 1:obj.sizePop
     
     % get chosen model
     thisMod = candMods(modInd(i));
@@ -22,7 +26,7 @@ parfor i = 1:obj.sizePop
     params{i} = thisMod.priorLo + thisMod.priorSt .* rand(1, thisMod.nParams);
     % simulate model with chosen parameter set
     simObs = thisMod.simltr(params{i}, metaData);
-    errors(i) = metric(simObs);
+    errors(i) = obj.metric.call(simObs);
     
 end
 
@@ -40,16 +44,21 @@ while Npassed < obj.sizePop
     extra = max(10, 2*(obj.sizePop - Npassed));
     % select model from model prior
     dummy = rand(1, extra);
-    modInd = [modInd sum(bsxfun(@ge, dummy, [0; obj.modelPrior(1:end-1)']))];
+    if multiModFlag
+        modInd = ...
+            [modInd sum(bsxfun(@ge, dummy, [0; obj.modelPrior(1:end-1)']))];
+    else
+        modInd = [modInd ones(1, extra)];
+    end
     clear dummy
-    parfor i = counter+1:counter+extra
+    for i = counter+1:counter+extra
         % get chosen model
         thisMod = obj.candMods(modInd(i));
         % choose parameter set from prior for this model
         params{i} = thisMod.priorLo + thisMod.priorSt .* rand(1, thisMod.nParams);
         % simulate model with chosen parameter set
         simObs = thisMod.simltr(params{i}, obj.metaData);
-        errors(i) = metric(simObs);
+        errors(i) = obj.metric.call(simObs);
     end
     counter = counter + extra;
     Npassed = sum(errors < obj.tolSched(1));

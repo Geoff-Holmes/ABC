@@ -9,7 +9,7 @@ classdef grhABCestimator < handle
         modelPrior;             % model prior cumulative distribution
         totalNits = 4;          % total number of SMC iterations
         n = 1;                  % current iteration
-        sizePop = 100;         % min population size
+        sizePop = 1000;         % min population size
         sizeGens;               % actual pop size for each iteration
         p = 1;                  % current sample number
         prKeepMod = 0.6;        % for model perturbation

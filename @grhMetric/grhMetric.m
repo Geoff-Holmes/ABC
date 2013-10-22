@@ -2,10 +2,9 @@ classdef grhMetric < handle
     
     properties
         
-        targetObs;   % target observations to measure against
         Nobs;        % number of observations
         custom;      % customized properties for each application
-        call;        % handle of customised calling function
+        callHandle;  % handle of customised calling function
         
     end
     
@@ -18,9 +17,9 @@ classdef grhMetric < handle
         
         end
 
-        function d = dist(obj, X)
+        function d = call(obj, X)
             
-            d = obj.call(obj, X);
+            d = obj.callHandle(obj, X);
 
         end
     end

@@ -10,6 +10,7 @@ else
     
     D = params;
     x = metaData.initial;
+    if size(x,1) > size(x,2), x = x'; end
     N = length(x);
     dt = metaData.timeInc;
     
