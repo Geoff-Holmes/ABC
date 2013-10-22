@@ -2,6 +2,9 @@ function [obj, params] = mainIteration(obj)
 
 % obj = mainIteration(obj)
 
+% shortcut to metric calling function handle
+metric = obj.metric.call;
+
 % get indices of models still represented in last generation
 liveModels = unique(obj.models{obj.p-1});
 
@@ -84,7 +87,7 @@ while Npassed < obj.sizePop
            
         % simulate model / parameter set pair
         simObs = iModel.simltr(paramProp, obj.metaData);
-        err  = obj.metric(simObs, obj.targetObs);
+        err  = metric(simObs);
         if err < obj.tolSched(obj.p)
             models(i) = model;
             params{i} = paramProp;

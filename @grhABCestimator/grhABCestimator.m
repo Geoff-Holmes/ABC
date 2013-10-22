@@ -26,11 +26,12 @@ classdef grhABCestimator < handle
     
     methods
         
-        function obj = grhABCestimator(obs, metaData, metric, candMods)
+        function obj = ...
+                grhABCestimator(obs, metaData, metricConstructor, candMods)
             
             obj.targetObs = obs;
             obj.metaData  = metaData;
-            obj.metric    = metric;
+            obj.metric    = grhMetric(obj.targetObs, metricConstructor);
             obj.candMods  = candMods;
             % default uniform model prior
             obj.modelPrior ...

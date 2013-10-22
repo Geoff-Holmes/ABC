@@ -10,7 +10,7 @@ clear dummy
 % foster slicing for parallel
 candMods = obj.candMods;
 metaData = obj.metaData;
-metric   = obj.metric;
+metric   = obj.metric.call;
 targetObs= obj.targetObs;
 
 % parallel loop
@@ -22,7 +22,7 @@ parfor i = 1:obj.sizePop
     params{i} = thisMod.priorLo + thisMod.priorSt .* rand(1, thisMod.nParams);
     % simulate model with chosen parameter set
     simObs = thisMod.simltr(params{i}, metaData);
-    errors(i) = metric(simObs, targetObs);
+    errors(i) = metric(simObs);
     
 end
 
@@ -49,7 +49,7 @@ while Npassed < obj.sizePop
         params{i} = thisMod.priorLo + thisMod.priorSt .* rand(1, thisMod.nParams);
         % simulate model with chosen parameter set
         simObs = thisMod.simltr(params{i}, obj.metaData);
-        errors(i) = obj.metric(simObs, obj.targetObs);
+        errors(i) = metric(simObs);
     end
     counter = counter + extra;
     Npassed = sum(errors < obj.tolSched(1));

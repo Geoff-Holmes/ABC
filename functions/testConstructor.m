@@ -1,24 +1,27 @@
-function obj = testConstructor(obj)
+function obj = testConstructor(obj, targetObs)
 
 % obj = testConstructor(obj)
 
 % shortcuts
-obs = obj.targetObs;
-Nobs = size(obs, 1);
+Nobs = length(targetObs);
 
-parfor i = 1:size(obs,1)
-    
+if ~iscell(targetObs)
+    targetObs = num2cell(targetObs, 2);
+end
+
+parfor i = 1:size(targetObs,1)
+
     % get equal count histogram and edges for each time obs
-    [iCnt, iEdgs] = grhEqCountHist(obs(i,:));
+    [iCnt, iEdgs] = grhEqCountHist(targetObs{i});
     % normalise
     cnt(i,:) = iCnt / sum(iCnt);    
     % get spacing between centres of bins
     cntrSpacing(i,:) = (iEdgs(1:end-1) + iEdgs(2:end)) / 2;
     % need intermediate step for parallel so tidy up
     edgs(i,:) = iEdgs;
-    
-end
 
+end
+   
 % add to metric object
 obj.Nobs = Nobs;
 obj.custom.cnt = cnt;
@@ -44,7 +47,7 @@ parfor i = 1:obj.Nobs
     % normalise
     cntX = cntX / sum(cntX);
     % calculate the error for this obs time
-    err(i) = grhHistDist(cntO(i,:), cntX(1:end-1), cntrSpacing(i,:));
+    err(i) = grhChaSrihari(cntO(i,:), cntX(1:end-1), cntrSpacing(i,:));
     
 end
 
