@@ -164,9 +164,11 @@ for model = liveModsNew
 %             K(i,j) = densityHandle(obj.params{obj.p}{ind(i)}, ...
 %             obj.params{obj.p-1}{ind0(j)}, sdW{model}.^2);
 %         end
+        % assumes uniform prior
         dummy(i) = ...
             modWeights(i) / sum(obj.weights{obj.p-1}(ind0) .* K);
         
+        % old code for beta prior
 %         wUp(ind(i)) = weights(ind(i))*prod(betapdf((obj.params{obj.p}{ind(i)}-iModel.priorLo) ...
 %             ./iModel.priorSt, ones(1,iModel.nParams), ones(1,iModel.nParams))) / sum(obj.weights{obj.p-1}(ind0) .* K(i,:));
     end
@@ -175,6 +177,7 @@ for model = liveModsNew
     
 end
 
+% normalise and store weights
 obj.weights{obj.p} = wUp / sum(wUp);
       
 % store size of population
