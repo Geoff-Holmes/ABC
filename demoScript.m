@@ -24,20 +24,14 @@ metaData.T       = length(obs);
 % create main object
 E=grhABCestimator(obs, metaData, @population_ChaSrihari, [M N]);
 clear obs metaData M N
-E.optionSetter('sizePop', 150);
+E.optionSetter('sizePop', 100);
 
-tic
+% run estimation
+E.run;
 
-E.firstIteration;
+E.runTime
 
-while E.p <= E.totalNits
-    iteration = E.p
-    E.mainIteration;
-end
-
-toc
-
-matlabpool close
+% matlabpool close
 
 % token presentation of results
 m = E.models{end};

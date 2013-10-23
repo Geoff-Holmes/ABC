@@ -2,8 +2,11 @@ function [obj, params] = mainIteration(obj)
 
 % obj = mainIteration(obj)
 
+tic;
+display(['iteration : ' num2str(obj.it)])
+
 % get indices of models still represented in last generation
-liveModels = unique(obj.models{obj.p-1});
+liveModels = unique(obj.models{obj.it-1});
 
 % get model perturbation probs
 modMarks = linspace(0, 1, length(liveModels));
@@ -14,23 +17,23 @@ modMarks = modMarks(2:end);
 for model = liveModels % loop over model indices
     
     % get indices of samples representing this model
-    ind = obj.models{obj.p-1} == model;
+    ind = obj.models{obj.it-1} == model;
     
     % get cumsum of wts for this model
-    temp = obj.weights{obj.p-1}(ind);
+    temp = obj.weights{obj.it-1}(ind);
     temp = temp / sum(temp);
     cumWtsMod{model} = cumsum(temp);
  
     if length(ind) > 1 % otherwise leave as before
         
         % get parameters as array
-        pArray{model} = vertcat(obj.params{obj.p-1}{ind});
+        pArray{model} = vertcat(obj.params{obj.it-1}{ind});
         
         % weighted mean
-        muW = sum(bsxfun(@times, obj.weights{obj.p-1}(ind)', pArray{model}));
+        muW = sum(bsxfun(@times, obj.weights{obj.it-1}(ind)', pArray{model}));
     
         % weighted covariance
-        sdW{model} = sqrt(2 * sum(bsxfun(@times, obj.weights{obj.p-1}(ind)', ...
+        sdW{model} = sqrt(2 * sum(bsxfun(@times, obj.weights{obj.it-1}(ind)', ...
             bsxfun(@minus, pArray{model}, muW).^2)));
         
         % store indices for this model
@@ -40,7 +43,7 @@ for model = liveModels % loop over model indices
 end
 
 % get cumulative weights across all samples
-cumWts = cumsum(obj.weights{obj.p-1});
+cumWts = cumsum(obj.weights{obj.it-1});
 
 % counter for accepted samples
 Npassed = 0;
@@ -51,17 +54,32 @@ models  = zeros(1, 2*obj.sizePop);
 weights = zeros(1, 2*obj.sizePop);
 errors  = zeros(1, 2*obj.sizePop);
 
+flag = 0; fac = 2;
+
 while Npassed < obj.sizePop
+        
+%     flag = flag + 1;
+%     
+%     % try new samples in 'extra' parallel batches
+%     if flag == 1
+%         extra = fac * obj.sizePop;
+%     end
+%     
+%     if flag == 2
+%         acceptanceRate = (Npassed / fac / obj.sizePop);
+%     end
+%     if flag > 1
+%         extra = max(10, ceil((obj.sizePop - Npassed) / acceptanceRate))
+%     end
     
-    % try new samples in 'extra' parallel batches
-    extra = max(10, 2 * (obj.sizePop - Npassed));
+    extra = max(10, fac * (obj.sizePop - Npassed))
     
     parfor i = 1:extra
         
         % pick a model from current marginal
         dummy = rand();
         pk = find(cumWts >= dummy, 1, 'first');
-        model = obj.models{obj.p-1}(pk);
+        model = obj.models{obj.it-1}(pk);
         
         % perturb model if there is more than one left
         if length(liveModels) > 1
@@ -91,12 +109,15 @@ while Npassed < obj.sizePop
         % simulate model / parameter set pair
         simObs = iModel.simltr(paramProp, obj.metaData);
         err  = obj.metric.call(simObs);
-        if err < obj.tolSched(obj.p)
+        if err < obj.tolSched(obj.it)
             models(i) = model;
             params{i} = paramProp;
             errors(i) = err;
         end
     end % parfor
+    
+    % update total sims count for info
+    obj.totalSims = obj.totalSims + extra;
     
     % identify which samples passed error tolerance test and how many
     passedInd = ~cellfun(@isempty, params);
@@ -104,12 +125,12 @@ while Npassed < obj.sizePop
     
     % store those that passed
     idx = Npassed+1:Npassed+NnewPassed;
-    obj.models{obj.p}(idx) = models(passedInd);
-    obj.params{obj.p}(idx) = {params{passedInd}};
+    obj.models{obj.it}(idx) = models(passedInd);
+    obj.params{obj.it}(idx) = {params{passedInd}};
     
     if obj.Bwts
         weights(idx) = (1 - ...
-            (errors(passedInd)/obj.tolSched(obj.p)).^2)/obj.tolSched(obj.p);
+            (errors(passedInd)/obj.tolSched(obj.it)).^2)/obj.tolSched(obj.it);
     else
         weights(idx) = 1;
     end
@@ -120,7 +141,7 @@ end % while
 
 % main weight update
 % get indices of models still represented in new generation
-liveModsNew = unique(obj.models{obj.p});
+liveModsNew = unique(obj.models{obj.it});
 
 % initialise
 wUp = zeros(1, Npassed);
@@ -138,7 +159,7 @@ for model = liveModsNew
     end
     
     % get indices of samples representing this model
-    ind = obj.models{obj.p} == model;
+    ind = obj.models{obj.it} == model;
     
     % get number of samples for this model in both gens
     Nnew = sum(ind);
@@ -158,19 +179,19 @@ for model = liveModsNew
     % weight calculations
     parfor i = 1:Nnew
         
-        K = densityHandle(obj.params{obj.p}{ind(i)}, ...
-            cell2mat(obj.params{obj.p-1}(ind0)'), sdW{model}.^2)';
+        K = densityHandle(obj.params{obj.it}{ind(i)}, ...
+            cell2mat(obj.params{obj.it-1}(ind0)'), sdW{model}.^2)';
 %         for j = 1:Nold
-%             K(i,j) = densityHandle(obj.params{obj.p}{ind(i)}, ...
-%             obj.params{obj.p-1}{ind0(j)}, sdW{model}.^2);
+%             K(i,j) = densityHandle(obj.params{obj.it}{ind(i)}, ...
+%             obj.params{obj.it-1}{ind0(j)}, sdW{model}.^2);
 %         end
         % assumes uniform prior
         dummy(i) = ...
-            modWeights(i) / sum(obj.weights{obj.p-1}(ind0) .* K);
+            modWeights(i) / sum(obj.weights{obj.it-1}(ind0) .* K);
         
         % old code for beta prior
-%         wUp(ind(i)) = weights(ind(i))*prod(betapdf((obj.params{obj.p}{ind(i)}-iModel.priorLo) ...
-%             ./iModel.priorSt, ones(1,iModel.nParams), ones(1,iModel.nParams))) / sum(obj.weights{obj.p-1}(ind0) .* K(i,:));
+%         wUp(ind(i)) = weights(ind(i))*prod(betapdf((obj.params{obj.it}{ind(i)}-iModel.priorLo) ...
+%             ./iModel.priorSt, ones(1,iModel.nParams), ones(1,iModel.nParams))) / sum(obj.weights{obj.it-1}(ind0) .* K(i,:));
     end
     
     wUp(ind) = dummy;
@@ -178,9 +199,12 @@ for model = liveModsNew
 end
 
 % normalise and store weights
-obj.weights{obj.p} = wUp / sum(wUp);
+obj.weights{obj.it} = wUp / sum(wUp);
       
 % store size of population
-obj.sizeGens(obj.p) = Npassed;
+obj.sizeGens(obj.it) = Npassed;
 % update iteration count
-obj.p = obj.p + 1; 
+obj.it = obj.it + 1; 
+
+% update run time counter
+obj.runTime = obj.runTime + toc;

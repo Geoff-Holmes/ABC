@@ -2,6 +2,9 @@ function obj = firstIteration(obj)
 
 % obj = firstIteration(obj)
 
+tic;
+display(['iteration : ' num2str(obj.it)])
+
 % select model from model prior
 multiModFlag = length(obj.candMods) > 1;
 if multiModFlag
@@ -65,6 +68,9 @@ while Npassed < obj.sizePop
 
 end  
 
+% update total sim count for info
+obj.totalSims = counter;
+
 % get successful samples
 passedInd = find(errors < obj.tolSched(1));
 % passedInd = passedInd(1:obj.sizePop);
@@ -84,7 +90,10 @@ else
 end
 
 % update iteration number
-obj.p = obj.p + 1;
+obj.it = obj.it + 1;
+
+% update run time counter
+obj.runTime = obj.runTime + toc;
 
 
     

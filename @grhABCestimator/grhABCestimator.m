@@ -8,10 +8,9 @@ classdef grhABCestimator < handle
         candMods;               % candidate models
         modelPrior;             % model prior cumulative distribution
         totalNits = 4;          % total number of SMC iterations
-        n = 1;                  % current iteration
-        sizePop = 100;         % min population size
+        it = 1;                 % current iteration
+        sizePop = 100;          % min population size
         sizeGens;               % actual pop size for each iteration
-        p = 1;                  % current sample number
         prKeepMod = 0.6;        % for model perturbation
         figs = 1;               % flag for showing graphical output
         tolSched;               % error tolerance schedule
@@ -19,6 +18,8 @@ classdef grhABCestimator < handle
         models;                 % (index) model samples from posterior disn
         params;                 % corresponding parameter samples 
         weights;                % corresponding weights
+        runTime = 0;
+        totalSims = 0;
                 
     end
     
