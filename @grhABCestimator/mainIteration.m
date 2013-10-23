@@ -46,7 +46,10 @@ cumWts = cumsum(obj.weights{obj.p-1});
 Npassed = 0;
 
 % initialise (approximately)
-params = cell(1, 2*obj.sizePop);
+params  = cell(1, 2*obj.sizePop);
+models  = zeros(1, 2*obj.sizePop);
+weights = zeros(1, 2*obj.sizePop);
+errors  = zeros(1, 2*obj.sizePop);
 
 while Npassed < obj.sizePop
     
