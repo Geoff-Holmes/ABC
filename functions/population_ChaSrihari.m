@@ -1,6 +1,6 @@
 function obj = population_ChaSrihari(obj, targetObs)
 
-% obj = testConstructor(obj)
+% obj = population_ChaSrihari(obj, targetObs)
 
 % shortcuts
 Nobs = length(targetObs);
@@ -33,7 +33,7 @@ obj.callHandle = @population_ChaSrihari_Call;
 % function corresponding to distHandle handle
 function d = population_ChaSrihari_Call(estimatorObj, X)
 
-% d = testDistance(obj, X)
+% d = population_ChaSrihari_Call(estimatorObj, X)
 
 % shortcuts
 cntO = estimatorObj.custom.cnt;
@@ -53,7 +53,3 @@ end
 
 % add errors up over all obs times
 d = sum(err);
-
-
-
-
