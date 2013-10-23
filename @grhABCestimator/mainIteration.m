@@ -122,10 +122,20 @@ end % while
 % get indices of models still represented in new generation
 liveModsNew = unique(obj.models{obj.p});
 
+% initialise
+wUp = zeros(1, Npassed);
+
 for model = liveModsNew
     
     % shortcut to model
     iModel = obj.candMods(model);
+    
+    % get correct function for proposal density
+    if iModel.nParams == 1
+        densityHandle = @normpdf;
+    else
+        densityHandle = @mvnpdf;
+    end
     
     % get indices of samples representing this model
     ind = obj.models{obj.p} == model;
@@ -139,25 +149,34 @@ for model = liveModsNew
     ind0 = find(modIndLast{model});
     
     % initialise
-    K = zeros(Nnew,Nold);
+    K = zeros(1,Nold);
+    dummy = zeros(1,Nnew);
+    
+    % enable slice
+    modWeights = weights(ind);
     
     % weight calculations
-    for i = 1:Nnew
-        for j = 1:Nold
-            K(i,j) = mvnpdf(obj.params{obj.p}{ind(i)}, ...
-            obj.params{obj.p-1}{ind0(j)}, sdW{model}.^2);
-        end
-        wUp(ind(i)) = ...
-            weights(ind(i)) / sum(obj.weights{obj.p-1}(ind0) .* K(i,:));
+    parfor i = 1:Nnew
+        
+        K = densityHandle(obj.params{obj.p}{ind(i)}, ...
+            cell2mat(obj.params{obj.p-1}(ind0)'), sdW{model}.^2)';
+%         for j = 1:Nold
+%             K(i,j) = densityHandle(obj.params{obj.p}{ind(i)}, ...
+%             obj.params{obj.p-1}{ind0(j)}, sdW{model}.^2);
+%         end
+        dummy(i) = ...
+            modWeights(i) / sum(obj.weights{obj.p-1}(ind0) .* K);
         
 %         wUp(ind(i)) = weights(ind(i))*prod(betapdf((obj.params{obj.p}{ind(i)}-iModel.priorLo) ...
 %             ./iModel.priorSt, ones(1,iModel.nParams), ones(1,iModel.nParams))) / sum(obj.weights{obj.p-1}(ind0) .* K(i,:));
     end
     
-    obj.weights{obj.p} = wUp / sum(wUp);
+    wUp(ind) = dummy;
     
 end
-    
+
+obj.weights{obj.p} = wUp / sum(wUp);
+      
 % store size of population
 obj.sizeGens(obj.p) = Npassed;
 % update iteration count
