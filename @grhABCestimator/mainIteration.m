@@ -39,7 +39,7 @@ for model = liveModels % loop over model indices
     % get parameters as array
     pArray{model} = vertcat(obj.params{obj.it-1}{ind});
 
-    if sum(ind) > 1 % otherwise leave as before
+    if sum(ind) > 1 
        
         % weighted mean
         muW = sum(bsxfun(@times, obj.weights{obj.it-1}(ind)', pArray{model}));
@@ -59,23 +59,23 @@ cumWts = cumsum(obj.weights{obj.it-1});
 % counter for accepted samples
 Npassed = 0;
 
-flag = 0; fac = 3;
+flag = 0; fac = 3; % for determining parallel batch sizes
 
 while Npassed < obj.sizePop
         
     flag = flag + 1;
     
     % try new samples in 'extra' parallel batches
-    if flag == 1
+    if flag == 1 % first try a rough guess prob. on the low side
         extra = fac * obj.sizePop;
-    end
-    
-    if flag == 2
-        acceptanceRate = (Npassed / fac / obj.sizePop);
-    end
-    if flag > 1
-        extra = max(5 * nCores, ...
-            ceil((obj.sizePop - Npassed) / acceptanceRate));
+    else    
+        if flag == 2 % calculate how acceptance rate so far
+            acceptanceRate = (Npassed / fac / obj.sizePop);
+        end
+        if flag > 1 % use acceptance rate to predict tries required
+            extra = max(5 * nCores, ...
+                ceil((obj.sizePop - Npassed) / acceptanceRate));
+        end
     end
     
     % initialise
