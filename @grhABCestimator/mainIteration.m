@@ -54,12 +54,6 @@ cumWts = cumsum(obj.weights{obj.it-1});
 % counter for accepted samples
 Npassed = 0;
 
-% initialise (approximately)
-params  = cell(1, 2*obj.sizePop);
-models  = zeros(1, 2*obj.sizePop);
-weights = zeros(1, 2*obj.sizePop);
-errors  = zeros(1, 2*obj.sizePop);
-
 flag = 0; fac = 2;
 
 while Npassed < obj.sizePop
@@ -79,6 +73,12 @@ while Npassed < obj.sizePop
 %     end
     
     extra = max(10, fac * (obj.sizePop - Npassed))
+        
+    % initialise
+    params  = cell(1, extra);
+    models  = zeros(1, extra);
+    weights = zeros(1, extra);
+    errors  = zeros(1, extra);
     
     parfor i = 1:extra
         
@@ -140,6 +140,9 @@ while Npassed < obj.sizePop
     else
         weights(idx) = 1;
     end
+    
+    Npassed
+    NnewPassed
     
     % update counter
     Npassed = Npassed + NnewPassed;
