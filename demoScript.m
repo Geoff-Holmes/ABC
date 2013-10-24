@@ -33,16 +33,16 @@ E.runTime
 
 % matlabpool close
 
-% token presentation of results
-m = E.models{end};
-p = E.params{end};
-w = E.weights{end};
-
-m1 = m == 1;
-
-w1 = w(m1);
-p1 = p(m1);
-    
-grhWeightedHist([p1{:}], w1, 10)
-xlim([E.candMods(1).priorLo E.candMods(1).priorHi])
-xlabel('Posterior distribution over Diffusivity (model 1)')
+% % token presentation of results
+% m = E.models{end};
+% p = E.params{end};
+% w = E.weights{end};
+% 
+% m1 = m == 1;
+% 
+% w1 = w(m1);
+% p1 = p(m1);
+%     
+% grhWeightedHist([p1{:}], w1, 10)
+% xlim([E.candMods(1).priorLo E.candMods(1).priorHi])
+% xlabel('Posterior distribution over Diffusivity (model 1)')

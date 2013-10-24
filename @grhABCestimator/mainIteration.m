@@ -58,26 +58,26 @@ flag = 0; fac = 2;
 
 while Npassed < obj.sizePop
         
-%     flag = flag + 1;
-%     
-%     % try new samples in 'extra' parallel batches
-%     if flag == 1
-%         extra = fac * obj.sizePop;
-%     end
-%     
-%     if flag == 2
-%         acceptanceRate = (Npassed / fac / obj.sizePop);
-%     end
-%     if flag > 1
-%         extra = max(10, ceil((obj.sizePop - Npassed) / acceptanceRate))
-%     end
+    flag = flag + 1;
     
-    extra = max(10, fac * (obj.sizePop - Npassed))
-        
+    % try new samples in 'extra' parallel batches
+    if flag == 1
+        extra = fac * obj.sizePop;
+    end
+    
+    if flag == 2
+        acceptanceRate = (Npassed / fac / obj.sizePop);
+    end
+    if flag > 1
+        extra = max(10, ceil((obj.sizePop - Npassed) / acceptanceRate))
+    end
+    
+%     extra = max(10, fac * (obj.sizePop - Npassed))
+    
     % initialise
     params  = cell(1, extra);
     models  = zeros(1, extra);
-    weights = zeros(1, extra);
+%     weights = zeros(1, extra);
     errors  = zeros(1, extra);
     
     parfor i = 1:extra
