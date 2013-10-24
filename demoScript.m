@@ -6,7 +6,10 @@
 
 clear all
 
-if ~matlabpool('size'), matlabpool, end
+load rngErr
+rng(s);
+
+% if ~matlabpool('size'), matlabpool, end
 
 addpath('functions')
 

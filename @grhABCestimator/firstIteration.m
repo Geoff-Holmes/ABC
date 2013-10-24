@@ -5,6 +5,9 @@ function obj = firstIteration(obj)
 tic;
 display(['iteration : ' num2str(obj.it)])
 
+% get number of cores available
+nCores = matlabpool('size');
+
 % select model from model prior
 multiModFlag = length(obj.candMods) > 1;
 if multiModFlag
@@ -44,7 +47,7 @@ Npassed = sum(errors < obj.tolSched(1));
 while Npassed < obj.sizePop
     
     % do at least double the number of extra needed
-    extra = max(10, 2*(obj.sizePop - Npassed));
+    extra = max(5 * nCores, 2*(obj.sizePop - Npassed));
     % select model from model prior
     dummy = rand(1, extra);
     if multiModFlag

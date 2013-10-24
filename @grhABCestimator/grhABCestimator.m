@@ -20,6 +20,7 @@ classdef grhABCestimator < handle
         weights;                % corresponding weights
         runTime = 0;
         totalSims = 0;
+        rng;                   % state of rng when object created
                 
     end
     
@@ -36,10 +37,10 @@ classdef grhABCestimator < handle
             obj.modelPrior ...
                 = cumsum(ones(1,length(candMods))/length(candMods));
             
-            obj.models = cell(obj.totalNits, 1); %obj.sizePop);
-            obj.params = cell(obj.totalNits, 1); %obj.sizePop);
-%             obj.errors = zeros(obj.totalNits, obj.sizePop);
-            obj.weights = cell(obj.totalNits, 1); %obj.sizePop);
+            obj.models = cell(obj.totalNits, 1); 
+            obj.params = cell(obj.totalNits, 1);
+            obj.weights = cell(obj.totalNits, 1); 
+            obj.rng = rng;
             
 
             

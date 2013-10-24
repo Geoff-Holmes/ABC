@@ -5,6 +5,9 @@ function [obj, params] = mainIteration(obj)
 tic;
 display(['iteration : ' num2str(obj.it)])
 
+% get number of cores available
+nCores = matlabpool('size');
+
 % get indices of models still represented in last generation
 liveModels = unique(obj.models{obj.it-1});
 
@@ -24,17 +27,20 @@ for model = liveModels % loop over model indices
     
     % get indices of samples representing this model
     ind = obj.models{obj.it-1} == model;
+
+    % store indices for this model
+    modIndLast{model} = ind;
     
     % get cumsum of wts for this model
     temp = obj.weights{obj.it-1}(ind);
     temp = temp / sum(temp);
     cumWtsMod{model} = cumsum(temp);
  
-    if length(ind) > 1 % otherwise leave as before
-        
-        % get parameters as array
-        pArray{model} = vertcat(obj.params{obj.it-1}{ind});
-        
+    % get parameters as array
+    pArray{model} = vertcat(obj.params{obj.it-1}{ind});
+
+    if sum(ind) > 1 % otherwise leave as before
+       
         % weighted mean
         muW = sum(bsxfun(@times, obj.weights{obj.it-1}(ind)', pArray{model}));
     
@@ -42,9 +48,8 @@ for model = liveModels % loop over model indices
         sdW{model} = sqrt(2 * sum(bsxfun(@times, obj.weights{obj.it-1}(ind)', ...
             bsxfun(@minus, pArray{model}, muW).^2)));
         
-        % store indices for this model
-        modIndLast{model} = ind;
-        
+    else
+        sdW{model} = obj.candMods(model).priorSt/2;
     end
 end
 
@@ -54,7 +59,7 @@ cumWts = cumsum(obj.weights{obj.it-1});
 % counter for accepted samples
 Npassed = 0;
 
-flag = 0; fac = 2;
+flag = 0; fac = 3;
 
 while Npassed < obj.sizePop
         
@@ -69,10 +74,9 @@ while Npassed < obj.sizePop
         acceptanceRate = (Npassed / fac / obj.sizePop);
     end
     if flag > 1
-        extra = max(10, ceil((obj.sizePop - Npassed) / acceptanceRate))
+        extra = max(5 * nCores, ...
+            ceil((obj.sizePop - Npassed) / acceptanceRate));
     end
-    
-%     extra = max(10, fac * (obj.sizePop - Npassed))
     
     % initialise
     params  = cell(1, extra);
@@ -102,14 +106,14 @@ while Npassed < obj.sizePop
         % pick a random parameter set for this model acc to weights
         pk = find(cumWtsMod{model} >= rand(), 1, 'first');
         % generate a perturbed parameter according to proposal disn
-        paramProp = abs(normrnd(pArray{model}(pk,:), sdW{model}));
+        paramProp = normrnd(pArray{model}(pk,:), sdW{model});
         
         % check for boundaries on paramProp and regenerate if necessary
         while sum(paramProp >= iModel.priorLo) ...
                 < iModel.nParams ...
                 || sum(paramProp <= iModel.priorHi) ...
                 < iModel.nParams 
-            paramProp = abs(normrnd(pArray{model}(pk,:), sdW{model})); 
+            paramProp = normrnd(pArray{model}(pk,:), sdW{model}); 
         end
            
         % simulate model / parameter set pair
@@ -141,9 +145,6 @@ while Npassed < obj.sizePop
         weights(idx) = 1;
     end
     
-    Npassed
-    NnewPassed
-    
     % update counter
     Npassed = Npassed + NnewPassed;
 end % while
@@ -156,7 +157,7 @@ liveModsNew = unique(obj.models{obj.it});
 wUp = zeros(1, Npassed);
 
 for model = liveModsNew
-    
+
     % shortcut to model
     iModel = obj.candMods(model);
     
@@ -172,7 +173,6 @@ for model = liveModsNew
     
     % get number of samples for this model in both gens
     Nnew = sum(ind);
-%     Nold = sum(modIndLast{model});
     
     % convert to numbers
     ind = find(ind);
@@ -187,12 +187,13 @@ for model = liveModsNew
     % weight calculations
     parfor i = 1:Nnew
         
+        try
         K = densityHandle(obj.params{obj.it}{ind(i)}, ...
             cell2mat(obj.params{obj.it-1}(ind0)'), sdW{model}.^2)';
-%         for j = 1:Nold
-%             K(i,j) = densityHandle(obj.params{obj.it}{ind(i)}, ...
-%             obj.params{obj.it-1}{ind0(j)}, sdW{model}.^2);
-%         end
+        catch ex
+            sdW
+        end
+
         % assumes uniform prior
         dummy(i) = ...
             modWeights(i) / sum(obj.weights{obj.it-1}(ind0) .* K);
