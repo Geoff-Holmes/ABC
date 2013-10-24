@@ -12,6 +12,12 @@ liveModels = unique(obj.models{obj.it-1});
 modMarks = linspace(0, 1, length(liveModels));
 modMarks = modMarks(2:end);
 
+% initialise
+cumWtsMod = cell(1,length(liveModels));
+pArray    = cell(1,length(liveModels));
+sdW       = cell(1,length(liveModels));
+modIndLast= cell(1,length(liveModels));
+
 % get standard deviation for parameter perturbation kernel
 % corr variance is twice weighted variance of last parameter generation
 for model = liveModels % loop over model indices
@@ -163,14 +169,13 @@ for model = liveModsNew
     
     % get number of samples for this model in both gens
     Nnew = sum(ind);
-    Nold = sum(modIndLast{model});
+%     Nold = sum(modIndLast{model});
     
     % convert to numbers
     ind = find(ind);
     ind0 = find(modIndLast{model});
     
     % initialise
-    K = zeros(1,Nold);
     dummy = zeros(1,Nnew);
     
     % enable slice
