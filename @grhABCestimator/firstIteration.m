@@ -28,6 +28,11 @@ display(['Running ' num2str(2 * obj.sizePop) ' sims'])
 % parallel loop
 parfor i = 1:2 * obj.sizePop
     
+    % progress
+    if ~mod(i,1000)
+        display(['Starting simulation ' num2str(i) ' of ' num2str(2*obj.sizePop)])
+    end
+
     % get chosen model
     thisMod = candMods(modInd(i));
     % choose parameter set from prior for this model
@@ -63,6 +68,12 @@ while Npassed < obj.sizePop
     display(['Running ' num2str(extra) ' sims'])
 
     parfor i = counter+1:counter+extra
+        
+        % progress
+        if ~mod(i,1000)
+            display(['Starting simulation ' num2str(i) ' of ' num2str(extra)])
+        end
+        
         % get chosen model
         thisMod = obj.candMods(modInd(i));
         % choose parameter set from prior for this model

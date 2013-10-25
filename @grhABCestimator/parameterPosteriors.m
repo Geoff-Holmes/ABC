@@ -1,4 +1,8 @@
-function parameterPosteriors(obj)
+function parameterPosteriors(obj, opt)
+
+% parameterPosteriors(obj, opt)
+%
+% opt 'fullrange' plots over entire prior range
 
 % get results info
 params = obj.params{end};
@@ -25,7 +29,9 @@ for i = 1:length(modList)
     for j = 1:cols
         subplot(1,cols,j)
         grhWeightedHist(pArray(:,j)', modWts, 10);
-        xlim([iModel.priorLo(j) iModel.priorHi(j)])
+        if nargin > 1 && strcmp(opt, 'fullrange')
+            xlim([iModel.priorLo(j) iModel.priorHi(j)])
+        end
         xlabel(iModel.pNames{j})
         if j == 1, ylabel('Normalised count'); end
         suptitle(['Model : ' num2str(i)])
