@@ -11,11 +11,11 @@ nCores = matlabpool('size');
 % select model from model prior
 multiModFlag = length(obj.candMods) > 1;
 if multiModFlag
-    dummy = rand(1, obj.sizePop);
+    dummy = rand(1, 2 * obj.sizePop);
     modInd = sum(bsxfun(@ge, dummy, [0; obj.modelPrior(1:end-1)']));
     clear dummy
-else
-    modInd = ones(1, obj.sizePop);
+else 
+    modInd = ones(1, 2 * obj.sizePop);
 end
 
 % foster slicing for parallel
@@ -23,10 +23,10 @@ candMods = obj.candMods;
 metaData = obj.metaData;
 targetObs= obj.targetObs;
 
-display(['Running ' num2str(obj.sizePop) ' sims'])
+display(['Running ' num2str(2 * obj.sizePop) ' sims'])
 
 % parallel loop
-parfor i = 1:obj.sizePop
+parfor i = 1:2 * obj.sizePop
     
     % get chosen model
     thisMod = candMods(modInd(i));
