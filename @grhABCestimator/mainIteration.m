@@ -60,7 +60,7 @@ cumWts = cumsum(obj.weights{obj.it-1});
 % counter for accepted samples
 Npassed = 0;
 
-flag = 0; fac = 3; % for determining parallel batch sizes
+flag = 0; fac = 3; cntr = 0;% for determining parallel batch sizes
 
 while Npassed < obj.sizePop
         
@@ -70,14 +70,15 @@ while Npassed < obj.sizePop
     if flag == 1 % first try a rough guess prob. on the low side
         extra = fac * obj.sizePop;
     else    
-        if flag == 2 % calculate how acceptance rate so far
-            acceptanceRate = (Npassed / fac / obj.sizePop);
-        end
-        if flag > 1 % use acceptance rate to predict tries required
+        if flag > 1
+            % calculate acceptance rate so far
+            acceptanceRate = (Npassed / cntr);
             extra = max(5 * nCores, ...
                 ceil((obj.sizePop - Npassed) / acceptanceRate));
         end
     end
+    
+    cntr = cntr + extra;
     
     % initialise
     params  = cell(1, extra);
