@@ -16,7 +16,7 @@ classdef grhModel
         
         function obj = grhModel(func, priorLo, priorHi)
             
-            obj.name = func2str(func);
+            obj.name = strrep(func2str(func), '_', ' ');
             obj.simltr = func;
             obj.pNames = obj.simltr();
             % assumes calling func with nargin == 0 returns param names
