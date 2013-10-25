@@ -197,16 +197,16 @@ for model = liveModsNew
     % weight calculations
     parfor i = 1:Nnew
         
-        try
-        K = densityHandle(obj.params{obj.it}{ind(i)}, ...
-            cell2mat(obj.params{obj.it-1}(ind0)'), sdW{model}.^2)';
-        catch ex
-            sdW
-        end
+%         K = densityHandle(obj.params{obj.it}{ind(i)}, ...
+%             cell2mat(obj.params{obj.it-1}(ind0)'), sdW{model}.^2)';
+%         dummy(i) = ...
+%             modWeights(i) / sum(obj.weights{obj.it-1}(ind0) .* K); 
 
-        % assumes uniform prior
+    % assumes uniform prior
         dummy(i) = ...
-            modWeights(i) / sum(obj.weights{obj.it-1}(ind0) .* K);
+            modWeights(i) / sum(obj.weights{obj.it-1}(ind0) .* ...
+            densityHandle(obj.params{obj.it}{ind(i)}, ...
+            cell2mat(obj.params{obj.it-1}(ind0)'), sdW{model}.^2)');
         
         % old code for beta prior
 %         wUp(ind(i)) = weights(ind(i))*prod(betapdf((obj.params{obj.it}{ind(i)}-iModel.priorLo) ...
