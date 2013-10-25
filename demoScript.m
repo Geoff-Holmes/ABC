@@ -9,7 +9,7 @@ clear all
 load rngErr
 rng(s);
 
-% if ~matlabpool('size'), matlabpool, end
+if ~matlabpool('size'), matlabpool, end
 
 addpath('functions')
 

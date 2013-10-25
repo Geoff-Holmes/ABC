@@ -23,6 +23,8 @@ candMods = obj.candMods;
 metaData = obj.metaData;
 targetObs= obj.targetObs;
 
+display(['Running ' num2str(obj.sizePop) ' sims'])
+
 % parallel loop
 parfor i = 1:obj.sizePop
     
@@ -57,6 +59,9 @@ while Npassed < obj.sizePop
         modInd = [modInd ones(1, extra)];
     end
     clear dummy
+
+    display(['Running ' num2str(extra) ' sims'])
+
     parfor i = counter+1:counter+extra
         % get chosen model
         thisMod = obj.candMods(modInd(i));

@@ -21,6 +21,7 @@ pArray    = cell(1,length(liveModels));
 sdW       = cell(1,length(liveModels));
 modIndLast= cell(1,length(liveModels));
 
+display('Calculating proposal densities')
 % get standard deviation for parameter perturbation kernel
 % corr variance is twice weighted variance of last parameter generation
 for model = liveModels % loop over model indices
@@ -84,7 +85,14 @@ while Npassed < obj.sizePop
 %     weights = zeros(1, extra);
     errors  = zeros(1, extra);
     
+    display(['Running ' num2str(extra) ' sims'])
+    
     parfor i = 1:extra
+        
+        % progress
+        if ~mod(i,1000)
+            display(['Starting simulation ' num2str(i) ' of ' num2str(extra)])
+        end
         
         % pick a model from current marginal
         dummy = rand();
@@ -149,6 +157,7 @@ while Npassed < obj.sizePop
     Npassed = Npassed + NnewPassed;
 end % while
 
+display('Calculating weights')
 % main weight update
 % get indices of models still represented in new generation
 liveModsNew = unique(obj.models{obj.it});
@@ -171,7 +180,7 @@ for model = liveModsNew
     % get indices of samples representing this model
     ind = obj.models{obj.it} == model;
     
-    % get number of samples for this model in both gens
+    % get number of new samples for this model
     Nnew = sum(ind);
     
     % convert to numbers
