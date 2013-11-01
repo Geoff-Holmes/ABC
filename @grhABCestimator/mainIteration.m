@@ -5,6 +5,9 @@ function [obj, params] = mainIteration(obj)
 tic;
 display(['iteration : ' num2str(obj.it)])
 
+% store state of random number gen at start of this iteration
+obj.rng(obj.it) = rng;
+
 % get number of cores available
 nCores = matlabpool('size');
 

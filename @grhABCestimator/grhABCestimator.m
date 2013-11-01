@@ -20,7 +20,7 @@ classdef grhABCestimator < handle
         weights;                % corresponding weights
         runTime = 0;
         totalSims = 0;
-        rng;                   % state of rng when object created
+        rng;                   % state of rng at start of each iteration
                 
     end
     
