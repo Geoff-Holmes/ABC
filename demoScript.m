@@ -6,12 +6,11 @@
 
 clear all
 
-load rngErr
-rng(s);
-
 if ~matlabpool('size'), matlabpool, end
 
 addpath('functions')
+addpath('models')
+addpath('metricConstructors')
 
 % load target obs data
 obs = importdata('data/AggOrig.mat');
@@ -27,25 +26,13 @@ metaData.T       = length(obs);
 % create main object
 E=grhABCestimator(obs, metaData, @population_ChaSrihari, [M N]);
 clear obs metaData M N
-E.optionSetter('sizePop', 4000);
+E.optionSetter('sizePop', 40);
 
 % run estimation
 E.run;
 
-E.runTime
-
 % matlabpool close
 
-% % token presentation of results
-% m = E.models{end};
-% p = E.params{end};
-% w = E.weights{end};
-% 
-% m1 = m == 1;
-% 
-% w1 = w(m1);
-% p1 = p(m1);
-%     
-% grhWeightedHist([p1{:}], w1, 10)
-% xlim([E.candMods(1).priorLo E.candMods(1).priorHi])
-% xlabel('Posterior distribution over Diffusivity (model 1)')
+% results
+E.modelMarginalPosterior;
+E.parameterPosteriors;
