@@ -71,7 +71,7 @@ while Npassed < obj.sizePop
         
         % progress
         if ~mod(i,1000)
-            display(['Starting simulation ' num2str(i-counter) ' of ' num2str(extra)])
+            display(['Starting simulation ' num2str(i-ceil(counter/1000)*1000) ' of ' num2str(extra)])
         end
         
         % get chosen model

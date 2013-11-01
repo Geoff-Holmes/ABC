@@ -230,3 +230,10 @@ obj.it = obj.it + 1;
 
 % update run time counter
 obj.runTime = obj.runTime + toc;
+if obj.it > obj.totalNits
+    hrs = floor(obj.runTime / 3600);
+    rem = obj.runTime - hrs*3600;
+    mins = floor(rem / 60);
+    secs = round(rem - mins*60);
+    obj.runTime = [num2str(hrs) ' hrs ' num2str(mins) ' mins ' num2str(secs) ' secs'];
+end
