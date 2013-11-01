@@ -1,4 +1,4 @@
-function out = driftDiffusion(params, metaData)
+function out = Drift_Diffusion(params, metaData)
 
 % out = driftDiffusion(params, metaData)
 

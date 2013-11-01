@@ -1,5 +1,7 @@
 function saveResult(obj, path, name)
 
+% saveResult(obj, path, name)
+
 if nargin < 2
     path = './';
 else
