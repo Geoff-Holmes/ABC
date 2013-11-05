@@ -13,7 +13,11 @@ addpath('models')
 addpath('metricConstructors')
 
 % load target obs data
-obs = importdata('data/AggOrig.mat');
+obs = importdata('data/levyDiffusion.mat');
+% convert to cell if not already
+if ~iscell(obs)
+    obs = num2cell(obs, 2);
+end
 
 % create candidate model objects 
 M = grhModel(@Pure_Diffusion, 0, 250);
@@ -24,7 +28,7 @@ metaData.timeInc = 1;
 metaData.T       = length(obs);
 
 % create main object
-E=grhABCestimator(obs, metaData, @population_ChaSrihari, [M N]);
+E=grhABCestimator(obs, metaData, @population_ChaSrihari, [N]);
 clear obs metaData M N
 E.optionSetter('sizePop', 400);
 
@@ -35,5 +39,6 @@ E.saveResult('results')
 % matlabpool close
 
 % results
-E.modelMarginalPosterior;
+E.getModelMarginalPosterior;
+E.plotModelMarginalPosterior;
 E.parameterPosteriors;

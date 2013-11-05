@@ -12,7 +12,7 @@ end
 parfor i = 1:Nobs
 
     % get equal count histogram and edges for each time obs
-    [iCnt, iEdgs] = grhEqCountHist(targetObs{i});
+    [iCnt, iEdgs] = grhEqCountHist(real(targetObs{i}));
     % normalise
     cnt(i,:) = iCnt / sum(iCnt);    
     % get spacing between centres of bins
