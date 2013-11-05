@@ -13,7 +13,7 @@ addpath('models')
 addpath('metricConstructors')
 
 % load target obs data
-obs = importdata('data/levyDiffusion.mat');
+obs = importdata('data/levyDiffusion_1pt8_75.mat');
 % convert to cell if not already
 if ~iscell(obs)
     obs = num2cell(obs, 2);
@@ -34,11 +34,17 @@ E.optionSetter('sizePop', 400);
 
 % run estimation
 E.run;
-E.saveResult('results')
 
 % matlabpool close
 
-% results
-E.getModelMarginalPosterior;
+% plot (and store some) results
 E.plotModelMarginalPosterior;
 E.parameterPosteriors;
+for j = 1:length(E.candMods)
+    E.jntParameterPosteriors(j);
+end
+
+% save in folder results
+E.saveResult('results')
+
+

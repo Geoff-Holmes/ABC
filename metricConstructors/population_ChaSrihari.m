@@ -31,16 +31,16 @@ obj.callHandle = @population_ChaSrihari_Call;
 
 
 % function corresponding to distHandle handle
-function d = population_ChaSrihari_Call(estimatorObj, X)
+function d = population_ChaSrihari_Call(metricObj, X)
 
-% d = population_ChaSrihari_Call(estimatorObj, X)
+% d = population_ChaSrihari_Call(metricObj, X)
 
 % shortcuts
-cntO = estimatorObj.custom.cnt;
-edgs = estimatorObj.custom.edgs;
-cntrSpacing = estimatorObj.custom.cntrs;
+cntO = metricObj.custom.cnt;
+edgs = metricObj.custom.edgs;
+cntrSpacing = metricObj.custom.cntrs;
 
-for i = 1:estimatorObj.Nobs
+for i = 1:metricObj.Nobs
     
     % get count of sim data in bins corr to those for target obs
     cntX = histc(X(i,:), edgs(i,:));

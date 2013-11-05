@@ -1,6 +1,6 @@
-function out = diffusion(params, metaData)
+function out = Pure_Diffusion(params, metaData)
 
-% out = diffusion(D)
+% out = Pure_Diffusion(params, metaData)
 
 paramNames = {'diffusivity'};
 if nargin == 0

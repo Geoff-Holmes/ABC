@@ -7,3 +7,4 @@ while obj.it <= obj.totalNits
     obj.mainIteration;
 end
 
+obj.getModelMarginalPosterior;
