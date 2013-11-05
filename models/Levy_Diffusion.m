@@ -18,7 +18,7 @@ else
     % arbitrary min step length
     xmin = .1;
     % max cut off
-    xmax = 10;
+    xmax = 10*scl;
     
     for t = 2:metaData.T
         for n = 1:N

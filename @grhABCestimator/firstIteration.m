@@ -23,10 +23,12 @@ candMods = obj.candMods;
 metaData = obj.metaData;
 targetObs= obj.targetObs;
 
-display(['Running ' num2str(2 * obj.sizePop) ' sims'])
+firstBatch = 2 * obj.sizePop;
+
+display(['Running ' num2str(firstBatch) ' sims'])
 
 % parallel loop
-parfor i = 1:2 * obj.sizePop
+parfor i = 1:firstBatch
     
     % progress
     if ~mod(i,1000)
@@ -43,7 +45,7 @@ parfor i = 1:2 * obj.sizePop
     
 end
 
-counter = obj.sizePop;
+counter = firstBatch;
 
 % calc tolerance schedule
 obj.getToleranceSchedule(errors);
@@ -88,7 +90,7 @@ while Npassed < obj.sizePop
 end  
 
 % update total sim count for info
-obj.totalSims = counter;
+obj.totalSims(obj.it) = counter;
 
 % get successful samples
 passedInd = find(errors < obj.tolSched(1));
@@ -108,11 +110,13 @@ else
     obj.weights{1} = ones(1, sizeGens(1));
 end
 
+% update run time counter
+obj.runTime(obj.it) = toc;
+
 % update iteration number
 obj.it = obj.it + 1;
 
-% update run time counter
-obj.runTime = obj.runTime + toc;
+
 
 
     

@@ -17,7 +17,7 @@ obs = importdata('data/AggOrig.mat');
 
 % create candidate model objects 
 M = grhModel(@Pure_Diffusion, 0, 250);
-N = grhModel(@Levy_Diffusion, [1 1], [50 250]);
+N = grhModel(@Levy_Diffusion, [1 1], [3 250]);
 
 metaData.initial = obs{1};
 metaData.timeInc = 1;
@@ -26,7 +26,7 @@ metaData.T       = length(obs);
 % create main object
 E=grhABCestimator(obs, metaData, @population_ChaSrihari, [M N]);
 clear obs metaData M N
-E.optionSetter('sizePop', 4000);
+E.optionSetter('sizePop', 400);
 
 % run estimation
 E.run;

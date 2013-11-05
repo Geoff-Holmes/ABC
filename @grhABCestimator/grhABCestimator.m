@@ -18,9 +18,10 @@ classdef grhABCestimator < handle
         models;                 % (index) model samples from posterior disn
         params;                 % corresponding parameter samples 
         weights;                % corresponding weights
-        runTime = 0;
-        totalSims = 0;
+        runTime;
+        totalSims;
         rng;                   % state of rng at start of each iteration
+        results;
                 
     end
     
@@ -40,6 +41,8 @@ classdef grhABCestimator < handle
             obj.models = cell(obj.totalNits, 1); 
             obj.params = cell(obj.totalNits, 1);
             obj.weights = cell(obj.totalNits, 1); 
+            obj.totalSims = zeros(1, obj.totalNits);
+            obj.runTime = zeros(1, obj.totalNits);
             obj.rng = rng;
             
 

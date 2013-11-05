@@ -139,7 +139,8 @@ while Npassed < obj.sizePop
     end % parfor
     
     % update total sims count for info
-    obj.totalSims = obj.totalSims + extra;
+    obj.totalSims(obj.it)...
+        = obj.totalSims(obj.it) + extra;
     
     % identify which samples passed error tolerance test and how many
     passedInd = ~cellfun(@isempty, params);
@@ -225,12 +226,16 @@ obj.weights{obj.it} = wUp / sum(wUp);
       
 % store size of population
 obj.sizeGens(obj.it) = Npassed;
+
+% update run time counter
+obj.runTime(obj.it) = toc;
+
 % update iteration count
 obj.it = obj.it + 1; 
 
-% update run time counter
-obj.runTime = obj.runTime + toc;
+% final iteration tasks
 if obj.it > obj.totalNits
+    obj.runTime(obj.totalNits+1) = sum(obj.runTime);
     hrs = floor(obj.runTime / 3600);
     rem = obj.runTime - hrs*3600;
     mins = floor(rem / 60);
