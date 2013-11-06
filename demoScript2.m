@@ -1,8 +1,5 @@
-% demonstrated improved Approximate Bayesian Computation Sequential Monte
+% Approximate Bayesian Computation Sequential Monte
 % Carlo code using parfor loops where possible.
-%
-% The process is stochastic and occaisionally errors occurr that haven't
-% been covered yet i.e. if one model has only one sample in a generation.
 
 clear all
 
