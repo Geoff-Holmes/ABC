@@ -10,15 +10,18 @@ addpath('models')
 addpath('metricConstructors')
 
 % load target obs data
-obs = importdata('data/levyDiffusion_1pt8_75.mat');
+obs = importdata('data/AggOrig.mat');
 % convert to cell if not already
 if ~iscell(obs)
     obs = num2cell(obs, 2);
 end
 
 % create candidate model objects 
-M = grhModel(@Pure_Diffusion, 0, 250);
-N = grhModel(@Levy_Diffusion, [1 1], [3 250]);
+Models = [grhModel(@Pure_Diffusion, 0, 250) ...
+    grhModel(@Drift_Levy_Diffusion, [1 1 0], [3 250 5]) ...
+    grhModel(@Levy_Diffusion, [1 1], [3 250]) ...
+    grhModel(@Drift_Diffusion, [0 0], [5 250])];
+
 
 % metaData is packaged for easy passing to simulator
 % the metaData components may vary depending on application
@@ -27,9 +30,9 @@ metaData.timeInc = 1;
 metaData.T       = length(obs);
 
 % create main object
-E=grhABCestimator(obs, metaData, @population_ChaSrihari, [M N]);
+E=grhABCestimator(obs, metaData, @population_ChaSrihari, Models);
 clear obs metaData M N
-E.optionSetter('sizePop', 4000);
+E.optionSetter('sizePop', 400);
 
 % run estimation
 E.run;
