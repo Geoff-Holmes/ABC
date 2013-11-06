@@ -27,6 +27,9 @@ end
 if exist([path name '.mat']) == 2
     display('File already exists - not saving')
 else
+    if ~(exist(path)==7)
+        mkdir(path);
+    end
     dummyStruct.(name) = obj;
     save([path name], '-struct', 'dummyStruct', name)
     display(['Saving ' path name '.mat'])

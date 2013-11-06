@@ -25,7 +25,7 @@ metaData = struct('targetObs', obs, 'timeInc', 1, 'T', length(obs));
 % 3rd argument is handle for customised error metric constructor
 % 4th is a list of candidate models
 E=grhABCestimator(obs, metaData, @sumSquareErrors, [M1 M2]);
-clear obs metaData M N
+clear obs metaData M1 M2
 E.optionSetter('sizePop', 400);
 
 % show all the model attributes
@@ -35,7 +35,7 @@ E
 E.run;
 
 % comment next line to save time reopening pool if required again
-% matlabpool close
+matlabpool close
 
 % plot (and store some) results
 if length(E.candMods) > 1
