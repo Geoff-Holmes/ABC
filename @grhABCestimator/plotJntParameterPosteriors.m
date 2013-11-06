@@ -68,14 +68,14 @@ for j = 1:nPairs
     end
     
     % create adapted density kernel for estimation
-    sig = cov(phi)*eye(2)/5;
+    sig = cov(phi(idx))*eye(2)/5;
     % initialise for result
     f = zeros(1,size(C,1));
     
     % add 'sandpile' kernel corresponding to each accepted weighted sample
     for i = 1:length(phi)
         f = f + wts(i) * ...
-            mvnpdf(C, phi(i,:), sig)';
+            mvnpdf(C, phi(i,idx), sig)';
     end
 
     % reshape into original grid for plotting

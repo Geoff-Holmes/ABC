@@ -42,9 +42,9 @@ matlabpool close
 
 % plot (and store some) results
 E.plotModelMarginalPosterior;
-E.parameterPosteriors;
+E.plotParameterPosteriors;
 for j = 1:length(E.candMods)
-    E.jntParameterPosteriors(j);
+    E.plotJntParameterPosteriors(j);
 end
 
 % save in folder results
