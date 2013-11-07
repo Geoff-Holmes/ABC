@@ -17,11 +17,12 @@ if ~iscell(obs)
 end
 
 % create candidate model objects 
-Models = [grhModel(@Pure_Diffusion, 0, 250) ...
-    grhModel(@Drift_Levy_Diffusion, [1 1 0], [3 250 5]) ...
-    grhModel(@Levy_Diffusion, [1 1], [3 250]) ...
-    grhModel(@Drift_Diffusion, [0 0], [5 250])];
-
+% Models = [grhModel(@Pure_Diffusion, 0, 250) ...
+%     grhModel(@Drift_Levy_Diffusion, [1 1 0], [3 250 5]) ...
+%     grhModel(@Levy_Diffusion, [1 1], [3 250]) ...
+%     grhModel(@Drift_Diffusion, [0 0], [5 250])];
+Models = [grhModel(@Drift_Levy_Diffusion, [1 1 0], [3 250 5]) ...
+    grhModel(@Levy_Diffusion, [1 1], [3 250])];
 
 % metaData is packaged for easy passing to simulator
 % the metaData components may vary depending on application
@@ -32,7 +33,7 @@ metaData.T       = length(obs);
 % create main object
 E=grhABCestimator(obs, metaData, @population_ChaSrihari, Models);
 clear obs metaData M N
-E.optionSetter('sizePop', 400);
+E.optionSetter('sizePop', 4000);
 
 % run estimation
 E.run;

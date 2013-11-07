@@ -113,17 +113,17 @@ for j = 1:nPairs
 %     end
 %     end
 
-    fSz = 10;
-    tks = [pts/5:pts/5:pts];
-    set(gca, 'XTick', [0 tks])
-    set(gca, 'XTickLabel', [0 round(100*sb(tks))/100])
-    set(gca, 'YTick', [0 tks])
-    set(gca, 'YTickLabel', wrev([0 sD(tks)]))
-    xlabel(thisModel.pNames(idx(1)), 'FontSize', fSz)
-    ylabel(thisModel.pNames(idx(2)), 'FontSize', fSz)
-    suptitle([thisModel.name ' model'])
-
 end
+
+fSz = 10;
+tks = [pts/5:pts/5:pts];
+set(gca, 'XTick', [0 tks])
+set(gca, 'XTickLabel', [0 round(100*sb(tks))/100])
+set(gca, 'YTick', [0 tks])
+set(gca, 'YTickLabel', wrev([0 sD(tks)]))
+xlabel(thisModel.pNames(idx(1)), 'FontSize', fSz)
+ylabel(thisModel.pNames(idx(2)), 'FontSize', fSz)
+suptitle([thisModel.name ' model'])
 
 %%%%%%%%%%%%% sub functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

@@ -34,7 +34,7 @@ for i = 1:length(modList)
         end
         xlabel(iModel.pNames{j})
         if j == 1, ylabel('Normalised count'); end
-        suptitle(['Model : ' iModel.name])
     end
+    suptitle(['Model : ' iModel.name])
 end
 
