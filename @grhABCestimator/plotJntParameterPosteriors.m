@@ -59,21 +59,26 @@ for j = 1:nPairs
     xtra = 33;
     sb1 = [sb(1)-xtra*bdel:bdel:sb(1)-bdel sb sb(end)+bdel:bdel:sb(end)+xtra*bdel];
     sD1 = [sD(1)-xtra*Ddel:Ddel:sD(1)-Ddel sD sD(end)+Ddel:Ddel:sD(end)+xtra*Ddel];
-
+    
+    % shortcuts
+    Nsb1 = length(sb1);
+    NsD1 = length(sD1);
+    
     % collect coordinates in 2 column array
-    for i = 1:length(sb1)
-        for j = 1:length(sD1)
-            C((i-1)*length(sD1)+j,:) = [sb1(i) sD1(j)];
+    C = zeros(Nsb1 * NsD1, 2);
+    for i = 1:Nsb1
+        for k = 1:NsD1
+            C((i-1)*length(sD1)+k,:) = [sb1(i) sD1(k)];
         end
     end
     
     % create adapted density kernel for estimation
-    sig = cov(phi(idx))*eye(2)/5;
+    sig = cov(phi(:, idx))*eye(2)/5
     % initialise for result
     f = zeros(1,size(C,1));
     
     % add 'sandpile' kernel corresponding to each accepted weighted sample
-    for i = 1:length(phi)
+    for i = 1:size(phi,1)
         f = f + wts(i) * ...
             mvnpdf(C, phi(i,idx), sig)';
     end
@@ -87,10 +92,12 @@ for j = 1:nPairs
     imagesc(flipud(f))
 
     % get maximum
-    clear C
-    for i = 1:length(sb)
-        for j = 1:length(sD)
-            C((i-1)*length(sD)+j,:) = [sb(i) sD(j)];
+    Nsb = length(sb);
+    NsD = length(sD);
+    C = zeros(Nsb * NsD, 2);
+    for i = 1:Nsb
+        for k = 1:NsD
+            C((i-1)*length(sD)+k,:) = [sb(i) sD(k)];
         end
     end
     f = reshape(f, 1, pts^2);
@@ -98,8 +105,6 @@ for j = 1:nPairs
     map = C(kmax,:)
     
     obj.results.map{model} = map;
-
-    f=reshape(f, pts, pts);
 
 %     if sum(tagP)
 %     try
@@ -113,16 +118,17 @@ for j = 1:nPairs
 %     end
 %     end
 
+    fSz = 10;
+    tks = pts/5:pts/5:pts;
+    set(gca, 'XTick', [0 tks])
+    set(gca, 'XTickLabel', [0 round(100*sb(tks))/100])
+    set(gca, 'YTick', [0 tks])
+    set(gca, 'YTickLabel', wrev([0 sD(tks)]))
+    xlabel(thisModel.pNames(idx(1)), 'FontSize', fSz)
+    ylabel(thisModel.pNames(idx(2)), 'FontSize', fSz)
+
 end
 
-fSz = 10;
-tks = [pts/5:pts/5:pts];
-set(gca, 'XTick', [0 tks])
-set(gca, 'XTickLabel', [0 round(100*sb(tks))/100])
-set(gca, 'YTick', [0 tks])
-set(gca, 'YTickLabel', wrev([0 sD(tks)]))
-xlabel(thisModel.pNames(idx(1)), 'FontSize', fSz)
-ylabel(thisModel.pNames(idx(2)), 'FontSize', fSz)
 suptitle([thisModel.name ' model'])
 
 %%%%%%%%%%%%% sub functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
