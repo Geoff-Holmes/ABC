@@ -21,19 +21,22 @@ end
 %     grhModel(@Drift_Levy_Diffusion, [1 1 0], [3 250 5]) ...
 %     grhModel(@Levy_Diffusion, [1 1], [3 250]) ...
 %     grhModel(@Drift_Diffusion, [0 0], [5 250])];
-Models = [grhModel(@Drift_Levy_Diffusion, [1 1 0], [3 250 5]) ...
-    grhModel(@Levy_Diffusion, [1 1], [3 250])];
+% Models = [grhModel(@Drift_Levy_Diffusion, [1 1 0], [3 250 5]) ...
+%     grhModel(@Levy_Diffusion, [1 1], [3 250])];
+
+Models = grhModel(@multiMigration, zeros(1, 6), [0 5 4 250 0 0]);
 
 % metaData is packaged for easy passing to simulator
 % the metaData components may vary depending on application
-metaData.initial = obs{1};
-metaData.timeInc = 1;
-metaData.T       = length(obs);
+metaData = struct(...
+    'initial', obs{1}, 'timeInc', 1, 'T', length(obs), ...
+    'initialOccupancy', ones(1, length(obs{1})), ...
+    'restrictionPoint', 100, 'restrictionHorizon', 1000);
 
 % create main object
 E=grhABCestimator(obs, metaData, @population_ChaSrihari, Models);
 clear obs metaData M N
-E.optionSetter('sizePop', 4000);
+E.optionSetter('sizePop', 400);
 
 % run estimation
 E.run;

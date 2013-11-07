@@ -16,7 +16,7 @@ else
     dt = metaData.timeInc;
     
     % arbitrary min step length
-    xmin = .1;
+    xmin = .1*scl;
     % max cut off
     xmax = 10*scl;
     
