@@ -46,7 +46,7 @@ metaData = struct(...
 % create main object
 E=grhABCestimator(obs, obsName, metaData, @population_ChaSrihari, Models);
 clear obs metaData M N
-E.optionSetter('sizePop', 100);
+E.optionSetter('sizePop', 4000);
 
 % run estimation
 E.run;

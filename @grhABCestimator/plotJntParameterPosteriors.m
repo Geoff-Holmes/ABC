@@ -3,10 +3,10 @@ function obj = plotJntParameterPosteriors(obj, model, axisRange)
 % obj = jntParameterPosteriors(obj, model, axisRange)
 
 % shortcut
-thisModel = obj.candMods(model);
+iModel = obj.candMods(model);
 % check for abort
-if thisModel.nParams < 2
-    display('Only one parameter for this model')
+if sum(iModel.pActive) < 2
+    display('Only one active parameter for this model')
     return
 end
 % has the user not specified a range for the axis
@@ -24,7 +24,7 @@ wts    = obj.weights{end}(obj.results.modInds{model});
 pts = 100;
 
 % get all parameter pairings
-idxs = bldIdx(1:thisModel.nParams);
+idxs = bldIdx(find(iModel.pActive))
 nPairs = length(idxs);
 
 % get subplot arrangement
@@ -39,10 +39,10 @@ for j = 1:nPairs
 
     if axisRange==0
         % no range specified so use full prior
-        sb = linspace(thisModel.priorLo(idx(1)), ...
-            thisModel.priorHi(idx(1)), pts+1);
-        sD = linspace(thisModel.priorLo(idx(2)), ...
-            thisModel.priorHi(idx(2)), pts+1);
+        sb = linspace(iModel.priorLo(idx(1)), ...
+            iModel.priorHi(idx(1)), pts+1);
+        sD = linspace(iModel.priorLo(idx(2)), ...
+            iModel.priorHi(idx(2)), pts+1);
     else
         % use user specified axis ranges
         sb = linspace(axisRange(1), axisRange(2), pts+1);
@@ -124,12 +124,12 @@ for j = 1:nPairs
     set(gca, 'XTickLabel', [0 round(100*sb(tks))/100])
     set(gca, 'YTick', [0 tks])
     set(gca, 'YTickLabel', wrev([0 sD(tks)]))
-    xlabel(thisModel.pNames(idx(1)), 'FontSize', fSz)
-    ylabel(thisModel.pNames(idx(2)), 'FontSize', fSz)
+    xlabel(iModel.pNames(idx(1)), 'FontSize', fSz)
+    ylabel(iModel.pNames(idx(2)), 'FontSize', fSz)
 
 end
 
-suptitle([thisModel.name ' model'])
+suptitle([iModel.name ' model'])
 
 %%%%%%%%%%%%% sub functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
