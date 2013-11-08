@@ -29,7 +29,7 @@ classdef grhABCestimator < handle
     methods
         
         function obj = grhABCestimator(...
-                obs, obsName; metaData, metricConstructor, candMods)
+                obs, obsName, metaData, metricConstructor, candMods)
             
             obj.targetObs = obs;
             obj.obsName   = obsName;

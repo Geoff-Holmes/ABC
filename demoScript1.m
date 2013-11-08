@@ -14,7 +14,7 @@ obs = importdata('data/AR2_pt9_negpt5_pt1.mat');
 
 % create candidate model objects 
 % M = grhModel(@simulatorFunction, [lower limits on priors], [upper limits]);
-M1 = grhModel(@simpleAR, -5, 5);
+M1 = grhModel(@Simple_AR, -5, 5);
 M2 = grhModel(@AR2, [-5 -5], [5 5]);
 
 % metaData is packaged for easy passing to simulator

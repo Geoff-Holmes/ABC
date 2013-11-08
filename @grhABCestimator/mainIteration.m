@@ -46,12 +46,13 @@ for model = liveModels % loop over model indices
     if sum(ind) > 1 
        
         % weighted mean
-        muW = sum(bsxfun(@times, obj.weights{obj.it-1}(ind)', pArray{model}));
+        muW = sum(...
+            bsxfun(@times, obj.weights{obj.it-1}(ind)', pArray{model}));
     
         % weighted covariance
-        sdW{model} = sqrt(2 * sum(bsxfun(@times, obj.weights{obj.it-1}(ind)', ...
+        sdW{model} = sqrt(...
+            2 * sum(bsxfun(@times, obj.weights{obj.it-1}(ind)', ...
             bsxfun(@minus, pArray{model}, muW).^2)));
-        
     else
         sdW{model} = obj.candMods(model).priorSt/2;
     end
@@ -95,7 +96,8 @@ while Npassed < obj.sizePop
         
         % progress
         if ~mod(i,1000)
-            display(['Starting simulation ' num2str(i) ' of ' num2str(extra)])
+            display(...
+                ['Starting simulation ' num2str(i) ' of ' num2str(extra)])
         end
         
         % pick a model from current marginal
@@ -152,8 +154,8 @@ while Npassed < obj.sizePop
     obj.params{obj.it}(idx) = {params{passedInd}};
     
     if obj.Bwts
-        weights(idx) = (1 - ...
-            (errors(passedInd)/obj.tolSched(obj.it)).^2)/obj.tolSched(obj.it);
+        weights(idx) = (1 - (errors(passedInd)/...
+            obj.tolSched(obj.it)).^2)/obj.tolSched(obj.it);
     else
         weights(idx) = 1;
     end
@@ -212,9 +214,12 @@ for model = liveModsNew
             densityHandle(obj.params{obj.it}{ind(i)}, ...
             cell2mat(obj.params{obj.it-1}(ind0)'), sdW{model}.^2)');
         
-        % old code for beta prior
-%         wUp(ind(i)) = weights(ind(i))*prod(betapdf((obj.params{obj.it}{ind(i)}-iModel.priorLo) ...
-%             ./iModel.priorSt, ones(1,iModel.nParams), ones(1,iModel.nParams))) / sum(obj.weights{obj.it-1}(ind0) .* K(i,:));
+%     % old code for beta prior
+%     wUp(ind(i)) = weights(ind(i))*prod(betapdf(...
+%         (obj.params{obj.it}{ind(i)}-iModel.priorLo)./iModel.priorSt,...
+%         ones(1,iModel.nParams), ones(1,iModel.nParams)))...
+%         / sum(obj.weights{obj.it-1}(ind0) .* K(i,:));
+
     end
     
     wUp(ind) = dummy;
@@ -240,5 +245,6 @@ if obj.it > obj.totalNits
     rem = obj.runTime - hrs*3600;
     mins = floor(rem / 60);
     secs = round(rem - mins*60);
-    obj.runTime = [num2str(hrs) ' hrs ' num2str(mins) ' mins ' num2str(secs) ' secs'];
+    obj.runTime = [num2str(hrs) ' hrs ' num2str(mins)...
+        ' mins ' num2str(secs) ' secs'];
 end

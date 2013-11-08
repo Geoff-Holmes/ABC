@@ -73,7 +73,7 @@ for j = 1:nPairs
     end
     
     % create adapted density kernel for estimation
-    sig = cov(phi(:, idx))*eye(2)/5
+    sig = cov(phi(:, idx))*eye(2)/5;
     % initialise for result
     f = zeros(1,size(C,1));
     
@@ -91,20 +91,20 @@ for j = 1:nPairs
     % plot result
     imagesc(flipud(f))
 
-    % get maximum
-    Nsb = length(sb);
-    NsD = length(sD);
-    C = zeros(Nsb * NsD, 2);
-    for i = 1:Nsb
-        for k = 1:NsD
-            C((i-1)*length(sD)+k,:) = [sb(i) sD(k)];
-        end
-    end
-    f = reshape(f, 1, pts^2);
-    [~, kmax] = max(f);
-    map = C(kmax,:)
-    
-    obj.results.map{model} = map;
+%     % get maximum
+%     Nsb = length(sb);
+%     NsD = length(sD);
+%     C = zeros(Nsb * NsD, 2);
+%     for i = 1:Nsb
+%         for k = 1:NsD
+%             C((i-1)*length(sD)+k,:) = [sb(i) sD(k)];
+%         end
+%     end
+%     f = reshape(f, 1, pts^2);
+%     [~, kmax] = max(f);
+%     map = C(kmax,:)
+%     
+%     obj.results.map{model} = map;
 
 %     if sum(tagP)
 %     try

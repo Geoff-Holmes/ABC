@@ -25,7 +25,7 @@ end
 % Models = [grhModel(@Drift_Levy_Diffusion, [1 1 0], [3 250 5]) ...
 %     grhModel(@Levy_Diffusion, [1 1], [3 250])];
 
-Models = grhModel(@multiMigration, zeros(1, 6), [10 5 4 250 1 .01]);
+Models = grhModel(@Multi_Migration, zeros(1, 6), [10 0 4 250 1 .01]);
 
 % metaData is packaged for easy passing to simulator
 % the metaData components may vary depending on application
@@ -37,13 +37,13 @@ metaData = struct(...
 % create main object
 E=grhABCestimator(obs, obsName, metaData, @population_ChaSrihari, Models);
 clear obs metaData M N
-E.optionSetter('sizePop', 400);
+E.optionSetter('sizePop', 40);
 
 % run estimation
 E.run;
 
 % comment next line to save time reopening pool if required again
-matlabpool close
+% matlabpool close
 
 % plot (and store some) results
 E.plotModelMarginalPosterior;
