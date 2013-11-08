@@ -23,11 +23,16 @@ cumWtsMod = cell(1,length(liveModels));
 pArray    = cell(1,length(liveModels));
 sdW       = cell(1,length(liveModels));
 modIndLast= cell(1,length(liveModels));
+pActive   = cell(1,length(liveModels));
 
 display('Calculating proposal densities')
 % get standard deviation for parameter perturbation kernel
 % corr variance is twice weighted variance of last parameter generation
 for model = liveModels % loop over model indices
+    
+    % get active parameters for this model
+    pActive{model} = obj.candMods(model).priorSt ~= 0;
+%     Nactive(model) = sum(pActive);
     
     % get indices of samples representing this model
     ind = obj.models{obj.it-1} == model;
@@ -41,8 +46,9 @@ for model = liveModels % loop over model indices
     cumWtsMod{model} = cumsum(temp);
  
     % get parameters as array
-    pArray{model} = vertcat(obj.params{obj.it-1}{ind});
-
+    temp = vertcat(obj.params{obj.it-1}{ind});
+    pArray{model} = temp(:, pActive{model});
+    
     if sum(ind) > 1 
        
         % weighted mean
@@ -54,7 +60,7 @@ for model = liveModels % loop over model indices
             2 * sum(bsxfun(@times, obj.weights{obj.it-1}(ind)', ...
             bsxfun(@minus, pArray{model}, muW).^2)));
     else
-        sdW{model} = obj.candMods(model).priorSt/2;
+        sdW{model} = obj.candMods(model).priorSt(pActive{model})/2;
     end
 end
 
@@ -93,7 +99,7 @@ while Npassed < obj.sizePop
     display(['Running ' num2str(extra) ' sims'])
     
     parfor i = 1:extra
-        
+
         % progress
         if ~mod(i,1000)
             display(...
@@ -120,14 +126,15 @@ while Npassed < obj.sizePop
         % pick a random parameter set for this model acc to weights
         pk = find(cumWtsMod{model} >= rand(), 1, 'first');
         % generate a perturbed parameter according to proposal disn
-        paramProp = normrnd(pArray{model}(pk,:), sdW{model});
+        paramProp = zeros(1,iModel.nParams);
+        paramProp(pActive{model}) = normrnd(pArray{model}(pk,:), sdW{model})
         
         % check for boundaries on paramProp and regenerate if necessary
         while sum(paramProp >= iModel.priorLo) ...
                 < iModel.nParams ...
                 || sum(paramProp <= iModel.priorHi) ...
                 < iModel.nParams 
-            paramProp = normrnd(pArray{model}(pk,:), sdW{model}); 
+            paramProp(pActive{model}) = normrnd(pArray{model}(pk,:), sdW{model}); 
         end
            
         % simulate model / parameter set pair
