@@ -68,7 +68,7 @@ cumWts = cumsum(obj.weights{obj.it-1});
 % counter for accepted samples
 Npassed = 0;
 
-flag = 0; fac = 3; cntr = 0;% for determining parallel batch sizes
+flag = 0; factor = 3; cntr = 0;% for determining parallel batch sizes
 
 while Npassed < obj.sizePop
         
@@ -76,11 +76,12 @@ while Npassed < obj.sizePop
     
     % try new samples in 'extra' parallel batches
     if flag == 1 % first try a rough guess prob. on the low side
-        extra = fac * obj.sizePop;
+        extra = factor * obj.sizePop;
     else    
         if flag > 1
             % calculate acceptance rate so far
             acceptanceRate = (Npassed / cntr);
+            % use rate to estimate how many more sims needed
             extra = max(5 * nCores, ...
                 ceil((obj.sizePop - Npassed) / acceptanceRate));
         end

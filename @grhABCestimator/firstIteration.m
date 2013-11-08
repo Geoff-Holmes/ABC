@@ -8,14 +8,17 @@ display(['iteration : ' num2str(obj.it)])
 % get number of cores available
 nCores = matlabpool('size');
 
+% set multiple of target population size for first batch
+factor = 2;
+
 % select model from model prior
 multiModFlag = length(obj.candMods) > 1;
 if multiModFlag
-    dummy = rand(1, 2 * obj.sizePop);
+    dummy = rand(1, factor * obj.sizePop);
     modInd = sum(bsxfun(@ge, dummy, [0; obj.modelPrior(1:end-1)']));
     clear dummy
 else 
-    modInd = ones(1, 2 * obj.sizePop);
+    modInd = ones(1, factor * obj.sizePop);
 end
 
 % foster slicing for parallel
@@ -23,7 +26,7 @@ candMods = obj.candMods;
 metaData = obj.metaData;
 targetObs= obj.targetObs;
 
-firstBatch = 2 * obj.sizePop;
+firstBatch = factor * obj.sizePop;
 
 display(['Running ' num2str(firstBatch) ' sims'])
 
@@ -36,11 +39,11 @@ parfor i = 1:firstBatch
     end
 
     % get chosen model
-    thisMod = candMods(modInd(i));
+    iModel = candMods(modInd(i));
     % choose parameter set from prior for this model
-    params{i} = thisMod.priorLo + thisMod.priorSt .* rand(1, thisMod.nParams);
+    params{i} = iModel.priorLo + iModel.priorSt .* rand(1, iModel.nParams);
     % simulate model with chosen parameter set
-    simObs = thisMod.simltr(params{i}, metaData);
+    simObs = iModel.simltr(params{i}, metaData);
     errors(i) = obj.metric.call(simObs);
     
 end
@@ -50,22 +53,24 @@ counter = firstBatch;
 % calc tolerance schedule
 obj.getToleranceSchedule(errors);
 
-% get index of samples passing first tolerance test
-Npassed = sum(errors < obj.tolSched(1));
+% get number of samples passing first tolerance test
+Npassed = sum(errors < obj.tolSched(obj.it));
 
 while Npassed < obj.sizePop
     
-    % do at least double the number of extra needed
-    extra = max(5 * nCores, 2*(obj.sizePop - Npassed));
+    % calculate acceptance rate so far
+    acceptanceRate = (Npassed / counter);
+    % use rate to estimate how many more sims needed
+    extra = max(5 * nCores, ...
+        ceil((obj.sizePop - Npassed) / acceptanceRate));
+            
     % select model from model prior
-    dummy = rand(1, extra);
     if multiModFlag
-        modInd = ...
-            [modInd sum(bsxfun(@ge, dummy, [0; obj.modelPrior(1:end-1)']))];
+        modInd = [modInd sum(bsxfun(@ge, rand(1, extra), ...
+            [0; obj.modelPrior(1:end-1)']))];
     else
         modInd = [modInd ones(1, extra)];
     end
-    clear dummy
 
     display(['Running ' num2str(extra) ' sims'])
 
@@ -73,19 +78,20 @@ while Npassed < obj.sizePop
         
         % progress
         if ~mod(i,1000)
-            display(['Starting simulation ' num2str(i-ceil(counter/1000)*1000) ' of ' num2str(extra)])
+            display(['Starting simulation ' ...
+                num2str(i-ceil(counter/1000)*1000) ' of ' num2str(extra)])
         end
         
         % get chosen model
-        thisMod = obj.candMods(modInd(i));
+        iModel = obj.candMods(modInd(i));
         % choose parameter set from prior for this model
-        params{i} = thisMod.priorLo + thisMod.priorSt .* rand(1, thisMod.nParams);
+        params{i} = iModel.priorLo + iModel.priorSt .* rand(1, iModel.nParams);
         % simulate model with chosen parameter set
-        simObs = thisMod.simltr(params{i}, obj.metaData);
+        simObs = iModel.simltr(params{i}, obj.metaData);
         errors(i) = obj.metric.call(simObs);
     end
     counter = counter + extra;
-    Npassed = sum(errors < obj.tolSched(1));
+    Npassed = sum(errors < obj.tolSched(obj.it));
 
 end  
 
@@ -115,10 +121,3 @@ obj.runTime(obj.it) = toc;
 
 % update iteration number
 obj.it = obj.it + 1;
-
-
-
-
-    
-
-

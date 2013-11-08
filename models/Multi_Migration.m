@@ -1,4 +1,4 @@
-function out = multiMigration(params, metaData)
+function out = Multi_Migration(params, metaData)
 
 % out = multiMigration(params, metaData)
 
@@ -37,41 +37,42 @@ else
     
     % time loop
     for t = 2:metaData.T
-        % loop over all cells
-        for n = 1:N
-            % get levy flight step according to power law
-            s = xmax + 1;
-            while s > xmax
-                u = rand();
-                % inverse cdf for power law distribution
-                s = xmin * (1 - u)^(-1/pwr);
-            end
-            % get isotropic direction
-            q = rand() * 2 * pi;
-            % incorporate angle to get x,y coords in complex form
-            s = scl * s * exp(q*1i);
-
-            % update position
-            x(t, n) = x(t-1, n) + (bias2 - R(n) * bias1) + s;
-            % check for boundary
-            if real(x(t, n)) < 0
-                x(t, n) = x(t, n) - real(x(t, n)); 
-            else
-                % check for an apply restriction
-                if real(x(t-1,n)) <= P && real(x(t,n)) > P ...
-                        && rand() < rstr;
-                    % leave cell at restriction horizon
-                    x(t,n) = x(t,n) - real(x(t,n)) + P;
-                end
-            end
-   
-            % update receptor levels
-            R(n) = R(n) .* (1 - depl * max((L-real(x(t,n))),0)/L);
+        u = rand(1,N);
+        % inverse cdf for power law distribution
+        s = xmin * (1 - u) .^ (-1/pwr);
+        % find steps over limit xmax
+        ind = s > xmax;
+        % recalculate as necessary
+        Nfailed = sum(ind);
+        while Nfailed
+            u = rand(1,Nfailed);
+            s(ind) = xmin * (1 - u) .^ (-1/pwr);     
+            ind = s > xmax;
+            Nfailed = sum(ind);
         end
+        
+        % get isotropic direction
+        q = rand(1, N) * 2 * pi;
+        % incorporate angle to get x,y coords in complex form
+        s = scl * s .* exp(q*1i);
+
+        % update position
+        x(t, :) = x(t-1, :) + (bias2 - R * bias1) + s;
+        
+        % check for boundary
+        x(t,:) = imag(x(t,:)) * 1i + real(x(t,:)) .* (real(x(t,:)) > 0);
+
+        % check for and apply restriction
+        if rstr
+            test = real(x(t-1,:)) <= P & real(x(t,:)) > P;
+            temp = rand(1, N) < rstr;
+            test = test & temp;
+            x(t, test) = P + imag(x(t, test)) * 1i; 
+        end
+
+        % update receptor levels
+        R = R .* (1 - depl * max((L-real(x(t,:))),0)/L);
     end
     
     out = x;
 end
-    
-
-    

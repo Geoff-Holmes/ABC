@@ -24,7 +24,7 @@ wts    = obj.weights{end}(obj.results.modInds{model});
 pts = 100;
 
 % get all parameter pairings
-idxs = bldIdx(find(iModel.pActive))
+idxs = bldIdx(find(iModel.pActive));
 nPairs = length(idxs);
 
 % get subplot arrangement
