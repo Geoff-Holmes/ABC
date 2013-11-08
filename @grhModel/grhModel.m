@@ -9,6 +9,7 @@ classdef grhModel
         priorLo;   % lower bounds of priors
         priorHi;   % upper bounds of priors
         priorSt;   % length of prior range
+        pActive;   % which parameters are active
         
     end
     
@@ -32,6 +33,7 @@ classdef grhModel
             obj.priorLo = priorLo;
             obj.priorHi = priorHi;
             obj.priorSt = priorHi - priorLo;
+            obj.pActive = obj.priorSt ~= 0;
            
         end
     end
