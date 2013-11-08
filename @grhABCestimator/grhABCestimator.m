@@ -3,6 +3,7 @@ classdef grhABCestimator < handle
     properties
         
         targetObs;              % target observations
+        obsName;                % name of obs dataset
         metaData;               % initial conditions, time increment etc
         metric;                 % measure of discrepancy simsObs-targetObs
         candMods;               % candidate models
@@ -27,10 +28,11 @@ classdef grhABCestimator < handle
     
     methods
         
-        function obj = ...
-                grhABCestimator(obs, metaData, metricConstructor, candMods)
+        function obj = grhABCestimator(...
+                obs, obsName; metaData, metricConstructor, candMods)
             
             obj.targetObs = obs;
+            obj.obsName   = obsName;
             obj.metaData  = metaData;
             obj.metric    = grhMetric(obj.targetObs, metricConstructor);
             obj.candMods  = candMods;

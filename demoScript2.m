@@ -10,7 +10,8 @@ addpath('models')
 addpath('metricConstructors')
 
 % load target obs data
-obs = importdata('data/AggOrig.mat');
+obsName = 'data/AggOrig.mat';
+obs = importdata(obsName);
 % convert to cell if not already
 if ~iscell(obs)
     obs = num2cell(obs, 2);
@@ -24,7 +25,7 @@ end
 % Models = [grhModel(@Drift_Levy_Diffusion, [1 1 0], [3 250 5]) ...
 %     grhModel(@Levy_Diffusion, [1 1], [3 250])];
 
-Models = grhModel(@multiMigration, zeros(1, 6), [0 5 4 250 0 0]);
+Models = grhModel(@multiMigration, zeros(1, 6), [10 5 4 250 1 .01]);
 
 % metaData is packaged for easy passing to simulator
 % the metaData components may vary depending on application
@@ -34,7 +35,7 @@ metaData = struct(...
     'restrictionPoint', 100, 'restrictionHorizon', 1000);
 
 % create main object
-E=grhABCestimator(obs, metaData, @population_ChaSrihari, Models);
+E=grhABCestimator(obs, obsName, metaData, @population_ChaSrihari, Models);
 clear obs metaData M N
 E.optionSetter('sizePop', 400);
 
