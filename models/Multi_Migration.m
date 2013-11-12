@@ -22,7 +22,7 @@ else
     N = length(x);
     x = complex([x; zeros(metaData.T-1, N)]);
     
-    dt = metaData.timeInc;
+%     dt = metaData.timeInc;
     
     % arbitrary min step length
     xmin = .1*scl;

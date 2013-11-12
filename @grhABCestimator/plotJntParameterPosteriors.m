@@ -1,6 +1,7 @@
-function obj = plotJntParameterPosteriors(obj, model, axisRange)
+function [obj, figHandle]...
+    = plotJntParameterPosteriors(obj, model, axisRange)
 
-% obj = jntParameterPosteriors(obj, model, axisRange)
+% [obj, figHandle] = plotJntParameterPosteriors(obj, model, axisRange)
 
 % shortcut
 iModel = obj.candMods(model);
@@ -14,7 +15,7 @@ if nargin < 3
     axisRange = 0;
 end
 
-figure;
+figHandle = figure;
 
 % get parameters and weights for this model
 phi = vertcat(obj.params{end}{obj.results.modInds{model}});
