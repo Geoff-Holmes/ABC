@@ -73,7 +73,7 @@ for model = find(obj.results.modelPosterior)
     display(num2str([p1;p2;p3]))
 %     display(num2str(p2))
 
-obj.results.map{model} = p;
+obj.results.map{model} = [p1; p2; p3];
 
 clear p
     
