@@ -1,4 +1,4 @@
-function [obj, figHandle]...
+ function [obj, figHandle]...
     = plotJntParameterPosteriors(obj, model, axisRange)
 
 % [obj, figHandle] = plotJntParameterPosteriors(obj, model, axisRange)
@@ -25,8 +25,8 @@ wts    = obj.weights{end}(obj.results.modInds{model});
 pts = 100;
 
 % get all parameter pairings
-idxs = bldIdx(find(iModel.pActive));
-nPairs = length(idxs);
+idxs = nchoosek(find(iModel.pActive), 2);
+nPairs = size(idxs, 1);
 
 % get subplot arrangement
 [rws, cls] = grhOptSubPlots(nPairs);
@@ -34,7 +34,7 @@ nPairs = length(idxs);
 % plot joint distribution for each pair of parameters
 for j = 1:nPairs
     % get indicies of this pair
-    idx = idxs{j};
+    idx = idxs(j,:);
     
     subplot(rws, cls, j)
 
@@ -134,20 +134,20 @@ suptitle([iModel.name ' model'])
 
 %%%%%%%%%%%%% sub functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function Idxs = bldIdx(J)
-
-Idxs = {};
-if length(J) > 2
-
-    for k = J(2:end)
-        Idxs{end+1} = [J(1) k];
-    end
-    Jextra = bldIdx(J(2:end));
-    lJx = length(Jextra);
-    Idxs(end+1:end+lJx) = Jextra;  
-else
-    Idxs = {J};
-end
+% function Idxs = bldIdx(J)
+% 
+% Idxs = {};
+% if length(J) > 2
+% 
+%     for k = J(2:end)
+%         Idxs{end+1} = [J(1) k];
+%     end
+%     Jextra = bldIdx(J(2:end));
+%     lJx = length(Jextra);
+%     Idxs(end+1:end+lJx) = Jextra;  
+% else
+%     Idxs = {J};
+% end
 
 
 function Y = reflect(X, s)
