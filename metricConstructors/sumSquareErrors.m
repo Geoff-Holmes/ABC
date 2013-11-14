@@ -6,7 +6,7 @@ obj.custom.targetObs = targetObs;
 obj.callHandle = @sumSquareErrors_Call
 
 
-% function corresponding to distHandle handle
+% function corresponding to obj.callHandle
 function d = sumSquareErrors_Call(metricObj, X)
 
 % d = sumSquareErrors_Call(metricObj, X)

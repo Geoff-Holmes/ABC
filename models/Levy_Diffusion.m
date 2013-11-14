@@ -1,10 +1,10 @@
-function out = Levy_Diffusion(params, metaData)
+function x = Levy_Diffusion(params, metaData)
 
 % out = Levy_Diffusion(params, metaData)
 
 paramNames = {'power', 'scale'};
 if nargin == 0
-    out = paramNames;
+    x = paramNames;
 else
     assert(length(paramNames) == length(params))
     
@@ -13,7 +13,7 @@ else
     x = metaData.initial;
     if size(x,1) > size(x,2), x = x'; end
     N = length(x);
-%     dt = metaData.timeInc;
+    x = complex([x; zeros(metaData.T-1, N)]);
     
     % arbitrary min step length
     xmin = .1*scl;
@@ -21,23 +21,29 @@ else
     xmax = 10*scl;
     
     for t = 2:metaData.T
-        for n = 1:N
-            s = xmax + 1;
-            while s > xmax
-                u = rand();
-                % inverse cdf for power law distribution
-                s = xmin * (1 - u)^(-1/pwr);
-            end
-            % get direction
-            q = rand() * 2 * pi;
-            % incorporate angle to get x,y coords in complex form
-            s = scl * s * exp(q*1i);
-
-            % update
-            x(t, n) = x(t-1, n) + s;
-            if real(x(t, n)) < 0, x(t, n) = x(t, n) - real(x(t, n)); end
+        u = rand(1,N);
+        % inverse cdf for power law distribution
+        s = xmin * (1 - u) .^ (-1/pwr);
+        % find steps over limit xmax
+        ind = s > xmax;
+        % recalculate as necessary
+        Nfailed = sum(ind);
+        while Nfailed
+            u = rand(1,Nfailed);
+            s(ind) = xmin * (1 - u) .^ (-1/pwr);     
+            ind = s > xmax;
+            Nfailed = sum(ind);
         end
+        
+        % get isotropic direction
+        q = rand(1, N) * 2 * pi;
+        % incorporate angle to get x,y coords in complex form
+        s = scl * s .* exp(q*1i);
+
+        % update position
+        x(t, :) = x(t-1, :) + s;
+        
+        % check for boundary
+        x(t,:) = imag(x(t,:)) * 1i + real(x(t,:)) .* (real(x(t,:)) > 0);
     end
-    
-    out = x;
 end

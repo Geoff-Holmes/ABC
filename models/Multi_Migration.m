@@ -1,12 +1,12 @@
-function out = Multi_Migration(params, metaData)
+function x = Multi_Migration(params, metaData)
 
-% out = multiMigration(params, metaData)
+% x = multiMigration(params, metaData)
 
 paramNames = {'bias in', 'bias out', 'levy power', ' levy scale', ...
     'restriction', 'depletion'};
 
 if nargin == 0
-    out = paramNames;
+    x = paramNames;
 else
     assert(length(paramNames) == length(params))
     
@@ -73,6 +73,4 @@ else
         % update receptor levels
         R = R .* (1 - depl * max((L-real(x(t,:))),0)/L);
     end
-    
-    out = x;
 end
