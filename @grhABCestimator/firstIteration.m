@@ -24,7 +24,7 @@ end
 % foster slicing for parallel
 candMods = obj.candMods;
 metaData = obj.metaData;
-targetObs= obj.targetObs;
+% targetObs= obj.targetObs;
 
 firstBatch = factor * obj.sizePop;
 

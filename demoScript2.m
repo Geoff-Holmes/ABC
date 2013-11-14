@@ -40,15 +40,15 @@ Models = grhModel(@Multi_Migration, zeros(1,6), [0 0 10 50 1 0]);
     
 % metaData is packaged for easy passing to simulator
 % the metaData components may vary depending on application
+% initial obs and number of obs meta data set inside constructor
 metaData = struct(...
-    'initial', obs{1}, 'timeInc', 1, 'T', length(obs), ...
     'initialOccupancy', ones(1, length(obs{1})), ...
     'restrictionPoint', 100, 'restrictionHorizon', 1000);
 
 % create main object
-E=grhABCestimator(obs, obsName, metaData, @population_ChaSrihari, Models);
+E=grhABCestimator(obsName, @population_ChaSrihari, Models, metaData);
 clear obs metaData M N
-E.optionSetter('sizePop', 4000);
+E.optionSetter('sizePop', 40);
 
 % run estimation
 E.run;

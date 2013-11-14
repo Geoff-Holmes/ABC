@@ -2,7 +2,6 @@ classdef grhABCestimator < handle
     
     properties
         
-        targetObs;              % target observations
         obsName;                % name of obs dataset
         metaData;               % initial conditions, time increment etc
         metric;                 % measure of discrepancy simsObs-targetObs
@@ -29,12 +28,26 @@ classdef grhABCestimator < handle
     methods
         
         function obj = grhABCestimator(...
-                obs, obsName, metaData, metricConstructor, candMods)
+                obsName, metricConstructor, candMods, metaData)
             
-            obj.targetObs = obs;
+            % observations
             obj.obsName   = obsName;
-            obj.metaData  = metaData;
-            obj.metric    = grhMetric(obj.targetObs, metricConstructor);
+            obs = importdata(obsName);
+            % convert to cell if not already
+            if ~iscell(obs)
+                obs = num2cell(obs, 2);
+            end
+            
+            % meta data
+            if nargin == 4
+                obj.metaData  = metaData;
+            end
+            obj.metaData.initial = obs{1};
+            obj.metaData.T       = length(obs);
+           
+            
+            % everything else
+            obj.metric    = grhMetric(obs, metricConstructor);
             obj.candMods  = candMods;
             % default uniform model prior
             obj.modelPrior ...
@@ -46,10 +59,6 @@ classdef grhABCestimator < handle
             obj.totalSims = zeros(1, obj.totalNits);
             obj.runTime = zeros(1, obj.totalNits);
             obj.rng = rng;
-            
-
-            
-            
             
         end
         
