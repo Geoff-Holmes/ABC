@@ -3,6 +3,9 @@
 
 clear all
 
+% seed random number generator using current time
+rng('shuffle');
+
 if ~matlabpool('size'), matlabpool, end
 
 addpath('functions')

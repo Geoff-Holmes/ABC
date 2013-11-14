@@ -3,23 +3,26 @@
 
 clear all
 
+% seed random number generator using current time
+rng('shuffle');
+
 if ~matlabpool('size'), matlabpool, end
 
 addpath('functions')
 addpath('models')
 addpath('metricConstructors')
 
-for p = 1:0.2:3
+for p = 2:0.2:3
 
 obsName = ['data/levyDiffusion' num2str(p*10) '.mat']
 
 % load target obs data
 % obsName = 'data/AggOrig.mat';
-% obs = importdata(obsName);
-% % convert to cell if not already
-% if ~iscell(obs)
-%     obs = num2cell(obs, 2);
-% end
+obs = importdata(obsName);
+% convert to cell if not already
+if ~iscell(obs)
+    obs = num2cell(obs, 2);
+end
 
 % create candidate model objects 
 % Models = [grhModel(@Pure_Diffusion, 0, 250) ...
@@ -27,36 +30,36 @@ obsName = ['data/levyDiffusion' num2str(p*10) '.mat']
 %     grhModel(@Levy_Diffusion, [1 1], [3 250]) ...
 %     grhModel(@Drift_Diffusion, [0 0], [5 250])];
 
-Models = [grhModel(@Drift_Levy_Diffusion, [0 0 0], [4 5 5]) ...
-    grhModel(@Levy_Diffusion, [0 0], [4 5])];
+% Models = [grhModel(@Drift_Levy_Diffusion, [0 0 0], [4 5 5]) ...
+%     grhModel(@Levy_Diffusion, [0 0], [4 5])];
 
-% u = [...
-%      0 0 4   5 0  0 ;...
-%      0 5 4   5 0  0 ;...
-%     10 5 4 250 1 .1 ;...
-%     10 0 4 250 1 .1 ;...
-%      0 5 4 250 1  0 ;...
-%      0 0 4 250 1  0 ;...
-%     10 5 4 250 0 .1 ;...
-%      0 0 4 250 0  0];
-%  for i = 1:2
-%      Models(i) = grhModel(@Multi_Migration, zeros(1, 6), u(i,:));
-%  end
+u = [...
+     0 0 4   5 0  0 ;...
+     0 5 4   5 0  0 ;...
+    10 5 4 250 1 .1 ;...
+    10 0 4 250 1 .1 ;...
+     0 5 4 250 1  0 ;...
+     0 0 4 250 1  0 ;...
+    10 5 4 250 0 .1 ;...
+     0 0 4 250 0  0];
+ for i = 1:2
+     Models(i) = grhModel(@Multi_Migration, zeros(1, 6), u(i,:));
+ end
 
 % Models = grhModel(@Multi_Migration, zeros(1,6), [0 0 10 50 1 0]);
     
 % metaData is packaged for easy passing to simulator
 % the metaData components may vary depending on application
 % initial obs and number of obs meta data set inside constructor
-metaData = struct();
-% metaData = struct(...
-%     'initialOccupancy', ones(1, length(obs{1})), ...
-%     'restrictionPoint', 100, 'restrictionHorizon', 1000);
+% metaData = struct();
+metaData = struct(...
+    'initialOccupancy', ones(1, length(obs{1})), ...
+    'restrictionPoint', 100, 'restrictionHorizon', 1000);
 
 % create main object
 E=grhABCestimator(obsName, @population_ChaSrihari, Models, metaData);
 clear obs metaData M N
-E.optionSetter('sizePop', 4000);
+E.optionSetter('sizePop', 40);
 
 % run estimation
 E.run;
