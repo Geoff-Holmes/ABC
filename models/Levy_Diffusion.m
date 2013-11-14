@@ -13,7 +13,7 @@ else
     x = metaData.initial;
     if size(x,1) > size(x,2), x = x'; end
     N = length(x);
-    dt = metaData.timeInc;
+%     dt = metaData.timeInc;
     
     % arbitrary min step length
     xmin = .1*scl;
