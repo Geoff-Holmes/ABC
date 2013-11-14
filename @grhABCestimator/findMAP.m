@@ -23,8 +23,8 @@ for model = find(obj.results.modelPosterior)
     Nparams = sum(iModel.pActive);
 
     % get parameter sets and corresponding weights
-    temp = vertcat(obj.params{end}{:});
-    params = temp(obj.results.modInds{model}, iModel.pActive);
+    temp = vertcat(obj.params{end}{obj.results.modInds{model}});
+    params = temp(:, iModel.pActive);
     weights = obj.weights{end}(obj.results.modInds{model});
    
     pBnds = [iModel.priorLo(iModel.pActive);...
