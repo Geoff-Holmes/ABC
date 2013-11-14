@@ -9,7 +9,12 @@ iModel = obj.candMods(model);
 if sum(iModel.pActive) < 2
     display('Only one active parameter for this model')
     return
+else if sum(obj.results.modInds{model}) == 0
+        display([iModel.name ' not represented in posterior.'])
+        return
+    end
 end
+        
 % has the user not specified a range for the axis
 if nargin < 3
     axisRange = 0;
