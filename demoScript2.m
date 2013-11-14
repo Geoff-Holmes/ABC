@@ -9,21 +9,25 @@ addpath('functions')
 addpath('models')
 addpath('metricConstructors')
 
+for p = 1:0.2:3
+
+obsName = ['data/levyDiffusion' num2str(p*10) '.mat']
+
 % load target obs data
-obsName = 'data/AggOrig.mat';
+% obsName = 'data/AggOrig.mat';
 obs = importdata(obsName);
-% convert to cell if not already
-if ~iscell(obs)
-    obs = num2cell(obs, 2);
-end
+% % convert to cell if not already
+% if ~iscell(obs)
+%     obs = num2cell(obs, 2);
+% end
 
 % create candidate model objects 
 % Models = [grhModel(@Pure_Diffusion, 0, 250) ...
 %     grhModel(@Drift_Levy_Diffusion, [1 1 0], [3 250 5]) ...
 %     grhModel(@Levy_Diffusion, [1 1], [3 250]) ...
 %     grhModel(@Drift_Diffusion, [0 0], [5 250])];
-% Models = [grhModel(@Drift_Levy_Diffusion, [1 1 0], [3 250 5]) ...
-%     grhModel(@Levy_Diffusion, [1 1], [3 250])];
+Models = [grhModel(@Drift_Levy_Diffusion, [1 0 0], [3 5 5]) ...
+    grhModel(@Levy_Diffusion, [1 0], [3 5])];
 
 % u = [...
 %     10 5 4 250 1 .1 ;...
@@ -36,19 +40,19 @@ end
 %      Models(i) = grhModel(@Multi_Migration, zeros(1, 6), u(i,:));
 %  end
 
-Models = grhModel(@Multi_Migration, zeros(1,6), [0 0 10 50 1 0]);
+% Models = grhModel(@Multi_Migration, zeros(1,6), [0 0 10 50 1 0]);
     
 % metaData is packaged for easy passing to simulator
 % the metaData components may vary depending on application
 % initial obs and number of obs meta data set inside constructor
-metaData = struct(...
-    'initialOccupancy', ones(1, length(obs{1})), ...
-    'restrictionPoint', 100, 'restrictionHorizon', 1000);
+metaData = struct() %...
+%     'initialOccupancy', ones(1, length(obs{1})), ...
+%     'restrictionPoint', 100, 'restrictionHorizon', 1000);
 
 % create main object
 E=grhABCestimator(obsName, @population_ChaSrihari, Models, metaData);
 clear obs metaData M N
-E.optionSetter('sizePop', 40);
+E.optionSetter('sizePop', 4000);
 
 % run estimation
 E.run;
@@ -62,8 +66,11 @@ E.plotParameterPosteriors;
 for j = 1:length(E.candMods)
     E.plotJntParameterPosteriors(j);
 end
+E.findMAP();
 
 % save in folder results
 E.saveResult('results')
+
+end
 
 
