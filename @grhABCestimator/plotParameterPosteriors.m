@@ -24,19 +24,22 @@ for i = 1:length(modList)
     % package them for easy use
     pArray = vertcat(modPms{:});
     % get plotting info
-    cols = iModel.nParams;
+    cols = sum(iModel.pActive);
     figure;
     % loop over each parameter
     for j = 1:cols
+        % get this parameters index
+        paramID = find(iModel.pActive, j);
+        paramID = paramID(end);
         subplot(1,cols,j)
         % plot weighted histogram
-        grhWeightedHist(pArray(:,j)', modWts, 10);
+        grhWeightedHist(pArray(:,paramID)', modWts, 10);
         % adjust to full prior range if required option
         if nargin > 1 && strcmp(opt, 'fullrange')
-            xlim([iModel.priorLo(j) iModel.priorHi(j)])
+            xlim([iModel.priorLo(paramID) iModel.priorHi(paramID)])
         end
         % label axes
-        xlabel(iModel.pNames{j})
+        xlabel(iModel.pNames{paramID})
         if j == 1, ylabel('Normalised count'); end
     end
     suptitle(['Model : ' iModel.name])
