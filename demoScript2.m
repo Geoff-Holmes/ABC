@@ -1,6 +1,7 @@
 % Approximate Bayesian Computation Sequential Monte
 % Carlo code using parfor loops where possible.
 
+close all
 clear all
 
 % seed random number generator using current time
@@ -12,12 +13,15 @@ addpath('functions')
 addpath('models')
 addpath('metricConstructors')
 
-for p = 2:0.2:3
+for p = 1:0.2:3
+    
+try
 
+% p = 1.2;
 obsName = ['data/levyDiffusion' num2str(p*10) '.mat']
 
 % load target obs data
-% obsName = 'data/AggOrig.mat';
+% obsName = 'data/AggOrig.mat'
 obs = importdata(obsName);
 % convert to cell if not already
 if ~iscell(obs)
@@ -36,12 +40,12 @@ end
 u = [...
      0 0 4   5 0  0 ;...
      0 5 4   5 0  0 ;...
-    10 5 4 250 1 .1 ;...
-    10 0 4 250 1 .1 ;...
-     0 5 4 250 1  0 ;...
-     0 0 4 250 1  0 ;...
-    10 5 4 250 0 .1 ;...
-     0 0 4 250 0  0];
+    10 5 4   5 1 .1 ;...
+    10 0 4   5 1 .1 ;...
+     0 5 4   5 1  0 ;...
+     0 0 4   5 1  0 ;...
+    10 5 4   5 0 .1 ;...
+     0 0 4   5 0  0];
  for i = 1:2
      Models(i) = grhModel(@Multi_Migration, zeros(1, 6), u(i,:));
  end
@@ -59,7 +63,7 @@ metaData = struct(...
 % create main object
 E=grhABCestimator(obsName, @population_ChaSrihari, Models, metaData);
 clear obs metaData M N
-E.optionSetter('sizePop', 40);
+E.optionSetter('sizePop', 4000);
 
 % run estimation
 E.run;
@@ -73,7 +77,12 @@ E.plotParameterPosteriors;
 for j = 1:length(E.candMods)
     E.plotJntParameterPosteriors(j);
 end
+
 E.findMAP();
+
+catch ex
+    E.results.error = ex;
+end
 
 % save in folder results
 E.saveResult('results')

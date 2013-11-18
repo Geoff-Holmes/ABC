@@ -2,6 +2,7 @@ classdef grhABCestimator < handle
     
     properties
         
+        id;                     % unique identifier
         obsName;                % name of obs dataset
         metaData;               % initial conditions, time increment etc
         metric;                 % measure of discrepancy simsObs-targetObs
@@ -59,6 +60,7 @@ classdef grhABCestimator < handle
             obj.totalSims = zeros(1, obj.totalNits);
             obj.runTime = zeros(1, obj.totalNits);
             obj.rng = rng;
+            obj.id = datestr(now);
             
         end
         
