@@ -12,7 +12,7 @@ for i = 1:length(fls)
     R = importdata(fls(i).name);
     if nargin
         if isstr(match)
-            flag = strcmp(getfield(R, field), match);
+            flag = strfind(getfield(R, field), match);
         else
             flag = getfield(R, field) == match;
         end

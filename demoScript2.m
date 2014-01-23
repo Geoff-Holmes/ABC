@@ -13,12 +13,11 @@ addpath('functions')
 addpath('models')
 addpath('metricConstructors')
 
-for p = 1:0.2:3
+for i = 1:10
     
 try
 
-% p = 1.2;
-obsName = ['data/levyDiffusion' num2str(p*10) '.mat']
+obsName = ['data/levyDiffusion15_' num2str(i) '.mat']
 
 % load target obs data
 % obsName = 'data/AggOrig.mat'
@@ -46,7 +45,7 @@ u = [...
      0 0 4   5 1  0 ;...
     10 5 4   5 0 .1 ;...
      0 0 4   5 0  0];
- for i = 1:2
+ for i = 1%:2
      Models(i) = grhModel(@Multi_Migration, zeros(1, 6), u(i,:));
  end
 
@@ -81,11 +80,14 @@ end
 E.findMAP();
 
 catch ex
+
     E.results.error = ex;
+    
 end
 
 % save in folder results
 E.saveResult('results')
+clear E
 
 end
 
