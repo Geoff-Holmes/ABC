@@ -2,7 +2,12 @@ function obj = sumSquareErrors(obj, targetObs)
 
 % obj = sumSquareErrors(obj, targetObs)
 
-obj.custom.targetObs = targetObs;
+if iscell(targetObs)
+    obj.custom.targetObs = cell2mat(targetObs);
+else
+    obj.custom.targetObs = targetObs;
+end
+
 obj.callHandle = @sumSquareErrors_Call
 
 

@@ -43,6 +43,7 @@ classdef grhABCestimator < handle
             if nargin == 4
                 obj.metaData  = metaData;
             end
+            obj.metaData.targetObs = obs;
             obj.metaData.initial = obs{1};
             obj.metaData.T       = length(obs);
            

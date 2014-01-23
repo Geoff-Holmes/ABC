@@ -1,6 +1,7 @@
 % Approximate Bayesian Computation Sequential Monte
 % Carlo code using parfor loops where possible.
 
+% close all
 clear all
 
 % seed random number generator using current time
@@ -13,21 +14,17 @@ addpath('models')
 addpath('metricConstructors')
 
 % load target obs data
-obs = importdata('data/AR2_pt9_negpt5_pt1.mat');
+obsName = 'data/AR2_pt9_negpt5_pt1.mat';
 
 % create candidate model objects 
 % M = grhModel(@simulatorFunction, [lower limits on priors], [upper limits]);
 M1 = grhModel(@Simple_AR, -5, 5);
 M2 = grhModel(@AR2, [-5 -5], [5 5]);
 
-% metaData is packaged for easy passing to simulator
-% the metaData components may vary depending on application
-metaData = struct('targetObs', obs, 'timeInc', 1, 'T', length(obs));
-
 % create main object 
 % 3rd argument is handle for customised error metric constructor
 % 4th is a list of candidate models
-E=grhABCestimator(obs, metaData, @sumSquareErrors, [M1 M2]);
+E=grhABCestimator(obsName, @sumSquareErrors, [M1 M2]);
 clear obs metaData M1 M2
 E.optionSetter('sizePop', 400);
 

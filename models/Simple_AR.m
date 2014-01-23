@@ -27,7 +27,7 @@ else
         
     else
         % one step ahead prediction for each time point prior to last
-        x = metaData.targetObs';
+        x = cell2mat(metaData.targetObs)';
         out = [x(1) a * x(1:metaData.T-1)];
     end
 
