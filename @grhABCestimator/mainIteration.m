@@ -9,7 +9,7 @@ display(['iteration : ' num2str(obj.it)])
 obj.rng(obj.it) = rng;
 
 % get number of cores available
-nCores = matlabpool('size');
+nCores = obj.poolsize;
 
 % get indices of models still represented in last generation
 liveModels = unique(obj.models{obj.it-1});
@@ -235,10 +235,12 @@ obj.it = obj.it + 1;
 
 % final iteration tasks
 if obj.it > obj.totalNits
-    obj.runTime(obj.totalNits+1) = sum(obj.runTime);
-    hrs = floor(obj.runTime / 3600);
-    rem = obj.runTime - hrs*3600;
+    temp1 = obj.runTime;
+    temp2 = sum(obj.runTime);
+    hrs = floor(temp2 / 3600);
+    rem = temp2 - hrs*3600;
     mins = floor(rem / 60);
     secs = round(rem - mins*60);
-    obj.runTime = [num2str(hrs) ' hrs ' num2str(mins) ' mins ' num2str(secs) ' secs'];
+    obj.runTime = {[num2str(hrs) ' hrs ' num2str(mins) ' mins ' num2str(secs) ' secs'], ...
+        temp1};
 end

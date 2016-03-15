@@ -19,6 +19,7 @@ classdef grhABCestimator < handle
         params;                 % corresponding parameter samples 
         weights;                % corresponding weights
         runTime;
+        poolsize;               % size of parpool running
         totalSims;
         rng;                   % state of rng at start of each iteration
         results;
@@ -44,7 +45,8 @@ classdef grhABCestimator < handle
             obj.totalSims = zeros(1, obj.totalNits);
             obj.runTime = zeros(1, obj.totalNits);
             obj.rng = rng;
-            
+            temp = gcp('nocreate');
+            obj.poolsize = temp.NumWorkers;
 
             
             

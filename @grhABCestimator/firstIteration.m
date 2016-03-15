@@ -6,7 +6,7 @@ tic;
 display(['iteration : ' num2str(obj.it)])
 
 % get number of cores available
-nCores = matlabpool('size');
+nCores = obj.poolsize;
 
 % select model from model prior
 multiModFlag = length(obj.candMods) > 1;

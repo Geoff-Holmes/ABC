@@ -3,7 +3,7 @@
 
 clear all
 
-if ~matlabpool('size'), matlabpool, end
+if isempty(gcp('nocreate')); parpool; end
 
 addpath('functions')
 addpath('models')
@@ -35,7 +35,7 @@ E
 E.run;
 
 % comment next line to save time reopening pool if required again
-matlabpool close
+% matlabpool close
 
 % plot (and store some) results
 if length(E.candMods) > 1
