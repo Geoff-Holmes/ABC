@@ -3,7 +3,7 @@
 
 clear all
 
-if ~matlabpool('size'), matlabpool, end
+if isempty(gcp('nocreate')); parpool; end
 
 addpath('functions')
 addpath('models')
